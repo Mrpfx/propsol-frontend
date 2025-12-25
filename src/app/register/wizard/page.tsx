@@ -41,32 +41,65 @@ export default function RegistrationWizardPage() {
     const validateStep = (step: number) => {
         switch (step) {
             case 1:
-                if (!formData.loginId || !formData.password) {
-                    toast.error("Please fill in all fields");
+                if (!formData.loginId || formData.loginId.length < 3) {
+                    toast.error("Login ID must be at least 3 characters");
+                    return false;
+                }
+                if (!formData.password || formData.password.length < 6) {
+                    toast.error("Password must be at least 6 characters");
                     return false;
                 }
                 return true;
             case 2:
-                if (!formData.propFirmName || !formData.propFirmWebsite || !formData.serverName) {
-                    toast.error("Please fill in all fields");
+                if (!formData.propFirmName || formData.propFirmName.length < 3) {
+                    toast.error("Prop Firm Name must be at least 3 characters");
+                    return false;
+                }
+                if (!formData.propFirmWebsite || formData.propFirmWebsite.length < 5) {
+                    toast.error("Website link must be valid (min 5 chars)");
+                    return false;
+                }
+                if (!formData.serverName || formData.serverName.length < 3) {
+                    toast.error("Server Name must be at least 3 characters");
                     return false;
                 }
                 return true;
             case 3:
-                if (!formData.serverType || !formData.challengeSteps || !formData.accountCost) {
-                    toast.error("Please fill in all fields");
+                if (!formData.serverType || formData.serverType.length < 2) {
+                    toast.error("Server Type must be at least 2 characters");
+                    return false;
+                }
+                if (!formData.challengeSteps || parseInt(formData.challengeSteps) < 1) {
+                    toast.error("Challenge Steps must be at least 1");
+                    return false;
+                }
+                if (!formData.accountCost || parseFloat(formData.accountCost) < 0) {
+                    toast.error("Account Cost cannot be negative");
                     return false;
                 }
                 return true;
             case 4:
-                if (!formData.accountSize || !formData.accountPhases) {
-                    toast.error("Please fill in all fields");
+                if (!formData.accountSize || parseFloat(formData.accountSize) < 0) {
+                    toast.error("Account Size cannot be negative");
+                    return false;
+                }
+                if (!formData.accountPhases) {
+                    toast.error("Please select Account Phases");
                     return false;
                 }
                 return true;
             case 5:
-                if (!formData.propFirmRules || !formData.whatsappNumber || !formData.telegramUsername) {
-                    toast.error("Please fill in all fields");
+                const wordCount = formData.propFirmRules.trim().split(/\s+/).filter(word => word.length > 0).length;
+                if (wordCount < 200) {
+                    toast.error(`Prop Firm Rules must be at least 200 words. Current: ${wordCount} words.`);
+                    return false;
+                }
+                if (!formData.whatsappNumber || formData.whatsappNumber.length < 5) {
+                    toast.error("WhatsApp Number must be valid (min 5 chars)");
+                    return false;
+                }
+                if (!formData.telegramUsername || formData.telegramUsername.length < 3) {
+                    toast.error("Telegram Username must be at least 3 characters");
                     return false;
                 }
                 return true;
@@ -281,10 +314,14 @@ export default function RegistrationWizardPage() {
                                 name="propFirmRules"
                                 value={formData.propFirmRules}
                                 onChange={handleInputChange as any}
-                                rows={4}
+                                rows={6}
                                 required
                                 className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#3B60FF] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-600"
+                                placeholder="Please describe the rules in detail (minimum 200 words)..."
                             />
+                            <div className="mt-1 text-right text-xs text-slate-500">
+                                Word count: {formData.propFirmRules.trim().split(/\s+/).filter(word => word.length > 0).length} / 200 (Minimum)
+                            </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">WhatsApp Number</label>
