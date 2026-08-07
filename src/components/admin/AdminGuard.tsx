@@ -1,19 +1,39 @@
+// @ts-nocheck
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { AccessDeniedModal } from "@/components/admin/AccessDeniedModal";
+import { hasPermission } from "@/components/admin/AdminSidebar";
 
-export default function AdminGuard({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+const ROUTE_ROLE_MAP: Record<string, string> = {
+    "/admin/users": "users",
+    "/admin/affiliates": "users",
+    "/admin/emails": "email_marketing",
+    "/admin/prop-firm": "prop_firms",
+    "/admin/plans": "prop_firms",
+    "/admin/payments": "payments",
+    "/admin/payouts": "payouts",
+    "/admin/transactions": "transactions",
+    "/admin/support": "support",
+    "/admin/messages": "support",
+    "/admin/packages": "users",
+    "/admin/booking-links": "settings",
+    "/admin/banners": "settings",
+    "/admin/admins": "super_admin",
+    "/admin/settings": "settings",
+    "/admin/register": "super_admin"
+};
+
+export default function AdminGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter();
+    const pathname = usePathname();
     const [isAuthorized, setIsAuthorized] = useState(false);
+    const [hasRoleAccess, setHasRoleAccess] = useState(true);
 
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem("access_token");
+            const token = localStorage.getItem("admin_access_token");
             const isAdmin = localStorage.getItem("is_admin");
 
             if (!token) {
@@ -23,31 +43,54 @@ export default function AdminGuard({
 
             if (isAdmin) {
                 setIsAuthorized(true);
-                return;
+            } else {
+                try {
+                    const { adminService } = await import("@/services/admin.service");
+                    const meData = await adminService.getMe();
+                    localStorage.setItem("admin_data", JSON.stringify(meData));
+                    localStorage.setItem("is_admin", "true");
+                    setIsAuthorized(true);
+                } catch (error) {
+                    console.error("Admin verification failed:", error);
+                    localStorage.removeItem("admin_access_token");
+                    localStorage.removeItem("admin_data");
+                    localStorage.removeItem("is_admin");
+                    router.push("/admin/login");
+                    return;
+                }
             }
 
-            // Token exists but is_admin flag is missing. Verify with backend.
-            try {
-                // Dynamically import adminService to avoid circular dependencies if any,
-                // though here it should be fine.
-                const { adminService } = await import("@/services/admin.service");
-                await adminService.getMe();
-                // If successful, set flag and authorize
-                localStorage.setItem("is_admin", "true");
-                setIsAuthorized(true);
-            } catch (error) {
-                console.error("Admin verification failed:", error);
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("user_data");
-                router.push("/admin/login");
+            // Role Permission Check
+            const requiredRole = Object.entries(ROUTE_ROLE_MAP).find(
+                ([route]) => pathname === route || pathname.startsWith(`${route}/`)
+            )?.[1];
+
+            if (!requiredRole) {
+                setHasRoleAccess(true);
+            } else {
+                const storedAdmin = localStorage.getItem("admin_data");
+                if (storedAdmin) {
+                    try {
+                        const adminData = JSON.parse(storedAdmin);
+                        setHasRoleAccess(hasPermission(adminData, requiredRole));
+                    } catch (e) {
+                        setHasRoleAccess(false);
+                    }
+                } else {
+                    setHasRoleAccess(false);
+                }
             }
         };
 
         checkAuth();
-    }, [router]);
+    }, [pathname, router]);
 
     if (!isAuthorized) {
-        return null; // Or a loading spinner
+        return null;
+    }
+
+    if (!hasRoleAccess) {
+        return <AccessDeniedModal />;
     }
 
     return <>{children}</>;

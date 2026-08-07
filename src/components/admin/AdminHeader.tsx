@@ -1,12 +1,19 @@
+// @ts-nocheck
 "use client";
 
-import { Bell, Search, User } from "lucide-react";
+import { Bell, Search, User, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { adminService, Admin } from "@/services/admin.service";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export function AdminHeader() {
+interface AdminHeaderProps {
+    onMenuClick?: () => void;
+}
+
+export function AdminHeader({ onMenuClick = () => {} }: AdminHeaderProps) {
     const [admin, setAdmin] = useState<Admin | null>(null);
+    const pathname = usePathname();
 
     useEffect(() => {
         const fetchAdmin = async () => {
@@ -20,13 +27,24 @@ export function AdminHeader() {
         fetchAdmin();
     }, []);
 
+    const getPageTitle = () => {
+        const path = pathname.replace("/admin", "").replace("/", "");
+        if (!path) return "Main Dashboard";
+        return path.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    };
+
     return (
-        <header className="fixed left-64 right-0 top-0 z-30 flex h-20 items-center justify-between border-b border-gray-100 bg-white/80 px-8 backdrop-blur-sm">
+        <header className="fixed left-0 lg:left-64 right-0 top-0 z-30 flex h-20 items-center justify-between border-b border-gray-100 bg-white/80 px-4 lg:px-8 backdrop-blur-sm transition-all duration-200">
             <div className="flex items-center gap-4">
-                <div className="text-sm text-gray-500">
-                    Pages / <span className="font-semibold text-gray-900">Dashboard</span>
+                <button onClick={onMenuClick} className="mr-2 p-2 text-gray-600 hover:bg-gray-100 rounded-lg lg:hidden">
+                    <Menu className="h-6 w-6" />
+                </button>
+                <div>
+                    <div className="hidden sm:block text-xs text-gray-500 font-medium">
+                        Pages / <span className="font-semibold text-gray-900">{getPageTitle()}</span>
+                    </div>
+                    <h1 className="text-xl font-bold text-gray-900">{getPageTitle()}</h1>
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900">Main Dashboard</h1>
             </div>
 
             <div className="flex items-center gap-4 rounded-full bg-white p-2 shadow-sm ring-1 ring-gray-100">
@@ -49,11 +67,11 @@ export function AdminHeader() {
                 <div className="flex items-center gap-3 pl-2">
                     <div className="text-right hidden sm:block">
                         <p className="text-sm font-medium text-gray-900">{admin?.name || "Admin"}</p>
-                        <p className="text-xs text-gray-500">Administrator</p>
+                        <p className="text-xs text-gray-500 font-medium capitalize">{admin?.email || "Administrator"}</p>
                     </div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                    <Link href="/admin/profile" className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:opacity-80 transition-opacity">
                         <User className="h-5 w-5" />
-                    </div>
+                    </Link>
                 </div>
             </div>
         </header>

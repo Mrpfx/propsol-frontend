@@ -32,9 +32,27 @@ export const authService = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
-        this.saveSession(response.data);
+
         if (typeof window !== 'undefined') {
-            localStorage.setItem('is_admin', 'true');
+            localStorage.setItem('admin_access_token', response.data.access_token);
+        }
+
+        try {
+            const meData = (await api.get('/admin/me')).data;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('admin_data', JSON.stringify(meData));
+                localStorage.setItem('is_admin', 'true');
+            }
+        } catch (e) {
+            console.error('Failed to fetch admin profile during login', e);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('admin_data', JSON.stringify({
+                    name: response.data.name,
+                    email: response.data.email,
+                    roles: []
+                }));
+                localStorage.setItem('is_admin', 'true');
+            }
         }
         return response.data;
     },
@@ -49,10 +67,27 @@ export const authService = {
         }
     },
 
+    saveAdminSession(data: LoginResponse) {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('admin_access_token', data.access_token);
+            localStorage.setItem('admin_data', JSON.stringify({
+                name: data.name,
+                email: data.email
+            }));
+        }
+    },
+
     logout() {
         if (typeof window !== 'undefined') {
             localStorage.removeItem('access_token');
             localStorage.removeItem('user_data');
+        }
+    },
+
+    adminLogout() {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('admin_access_token');
+            localStorage.removeItem('admin_data');
             localStorage.removeItem('is_admin');
         }
     },
@@ -92,8 +127,6 @@ export const authService = {
             email_verified: false,
             referred_by: data.referred_by || undefined,
         });
-        // If registration returns a token (as implied by user), save it.
-        // We'll check if the response has access_token.
         if (response.data && response.data.access_token) {
             this.saveSession(response.data);
         }

@@ -14,7 +14,11 @@ export const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('access_token');
+            const isAdminRoute = window.location.pathname.startsWith('/admin');
+            const adminToken = localStorage.getItem('admin_access_token');
+            const userToken = localStorage.getItem('access_token');
+            
+            const token = isAdminRoute ? (adminToken || userToken) : (userToken || adminToken);
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -31,14 +35,14 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             if (typeof window !== 'undefined') {
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('user_data');
-                localStorage.removeItem('is_admin');
-
-                // Check if we are in admin section
                 if (window.location.pathname.startsWith('/admin')) {
+                    localStorage.removeItem('admin_access_token');
+                    localStorage.removeItem('admin_data');
+                    localStorage.removeItem('is_admin');
                     window.location.href = '/admin/login';
                 } else {
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('user_data');
                     window.location.href = '/signin';
                 }
             }
