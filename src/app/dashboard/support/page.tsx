@@ -20,17 +20,17 @@ import { walletService } from '@/services/wallet.service';
 import { supportTicketService } from '@/services/support-ticket.service';
 
 const bannerService = {
-  getAll: async () => (await api.get('/banner-ads/')).data,
-  create: async (data) => (await api.post('/banner-ads/', data)).data,
-  update: async (id, data) => (await api.patch('/banner-ads/' + id + '/', data)).data,
-  delete: async (id) => (await api.delete('/banner-ads/' + id + '/')).data
+  getAll: async () => (await api.get('/banners')).data,
+  create: async (data) => (await api.post('/banners', data)).data,
+  update: async (id, data) => (await api.patch('/banners/' + id, data)).data,
+  delete: async (id) => (await api.delete('/banners/' + id)).data
 };
 
 const bookingLinkService = {
-  getAll: async () => (await api.get('/booking-links/')).data,
-  create: async (data) => (await api.post('/booking-links/', data)).data,
-  update: async (id, data) => (await api.patch('/booking-links/' + id + '/', data)).data,
-  delete: async (id) => (await api.delete('/booking-links/' + id + '/')).data
+  getAll: async () => (await api.get('/booking-links')).data,
+  create: async (data) => (await api.post('/booking-links', data)).data,
+  update: async (id, data) => (await api.patch('/booking-links/' + id, data)).data,
+  delete: async (id) => (await api.delete('/booking-links/' + id)).data
 };
 
 const planService = {

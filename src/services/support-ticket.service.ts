@@ -80,12 +80,12 @@ export interface SupportMessage {
 
 export const supportMessageService = {
     async createMessage(data: { name: string; email: string; phone?: string; message: string }): Promise<SupportMessage> {
-        const res = await api.post<SupportMessage>("/support/", data);
+        const res = await api.post<SupportMessage>("/support", data);
         return res.data;
     },
 
     async getAllMessages(skip: number = 0, limit: number = 100): Promise<SupportMessage[]> {
-        const res = await api.get<any>("/support/", { params: { skip, limit } });
+        const res = await api.get<any>("/support", { params: { skip, limit } });
         const data = res.data;
         return Array.isArray(data) ? data : data && "items" in data ? data.items : [];
     }
