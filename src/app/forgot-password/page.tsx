@@ -12,7 +12,6 @@ export default function ForgotPasswordPage() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
-    const [isAdmin, setIsAdmin] = useState(false);
 
     const handleRecover = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,11 +20,7 @@ export default function ForgotPasswordPage() {
         setError("");
 
         try {
-            if (isAdmin) {
-                await authService.recoverAdminPassword(email);
-            } else {
-                await authService.recoverPassword(email);
-            }
+            await authService.recoverPassword(email);
             const successMessage = "Password recovery email sent. Please check your inbox.";
             setMessage(successMessage);
             toast.success(successMessage);
@@ -100,19 +95,6 @@ export default function ForgotPasswordPage() {
                                 required
                                 className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#1234A6] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-600 placeholder:text-gray-300"
                             />
-                        </div>
-
-                        <div className="flex items-center">
-                            <input
-                                id="admin-checkbox"
-                                type="checkbox"
-                                checked={isAdmin}
-                                onChange={(e) => setIsAdmin(e.target.checked)}
-                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                            />
-                            <label htmlFor="admin-checkbox" className="ml-2 block text-sm text-gray-900">
-                                I am an Admin
-                            </label>
                         </div>
 
                         <button
