@@ -47,6 +47,9 @@ const supportService = {
   replyTicket: async (id, message) => (await api.post('/support/tickets/' + id + '/reply/', { message })).data
 };
 
+import { walletService } from '@/services/wallet.service';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+
 const createProxy = () => new Proxy(LucideIcons, {
   get(target, prop) {
     if (prop === 'default') return Link;
@@ -56,11 +59,14 @@ const createProxy = () => new Proxy(LucideIcons, {
     if (prop === 'redirect') return redirect;
     if (prop === 'error') return toast.error;
     if (prop === 'success') return toast.success;
+    if (prop === 'toast') return toast;
     if (prop === 'userService') return userService;
     if (prop === 'adminService') return adminService;
     if (prop === 'authService') return authService;
     if (prop === 'paymentService') return paymentService;
     if (prop === 'propFirmService') return propFirmService;
+    if (prop === 'walletService') return walletService;
+    if (prop === 'DashboardHeader') return DashboardHeader;
     if (prop === 'notificationService') return notificationService;
     if (prop === 'bannerService') return bannerService;
     if (prop === 'bookingLinkService') return bookingLinkService;

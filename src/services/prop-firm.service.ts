@@ -36,5 +36,16 @@ export const propFirmService = {
     async createRegistration(data: any): Promise<PropFirmRegistration> {
         const response = await api.post<PropFirmRegistration>('/prop-firm/', data);
         return response.data;
+    },
+
+    async createWhopCheckoutLink(orderId: string): Promise<{ checkout_url: string }> {
+        const response = await api.post<{ checkout_url: string }>(`/prop-firm/whop-checkout-link/${orderId}`);
+        return response.data;
+    },
+
+    async updateRegistration(id: string, data: any): Promise<PropFirmRegistration> {
+        const response = await api.patch<PropFirmRegistration>(`/prop-firm/${id}`, data);
+        return response.data;
     }
 };
+

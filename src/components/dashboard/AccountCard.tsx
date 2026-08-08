@@ -1,19 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check, X, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AccountInfoModal } from "@/components/dashboard/AccountInfoModal";
+import { AccountEditModal } from "@/components/dashboard/AccountEditModal";
 import Link from "next/link";
 
 import { PropFirmRegistration } from "@/services/prop-firm.service";
 
 interface AccountCardProps {
     id: string;
-    password?: string; // Optional for security/mock
+    password?: string;
     name: string;
     status: "pending" | "in_progress" | "passed" | "failed";
-    currentStep: 1 | 2 | 3; // 1: Register, 2: Passing, 3: Passed
+    currentStep: 1 | 2 | 3;
     account: PropFirmRegistration;
 }
 
@@ -23,9 +24,11 @@ export function AccountCard({
     name,
     status,
     currentStep,
-    account,
+    account: initialAccount,
 }: AccountCardProps) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [account, setAccount] = useState<PropFirmRegistration>(initialAccount);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const isFailed = status === "failed";
 
     return (
@@ -39,31 +42,49 @@ export function AccountCard({
                 {/* Header */}
                 <div className="mb-8 flex items-start justify-between">
                     <div>
-                        <h3 className="mb-4 text-lg font-bold text-gray-900">
-                            Prop Account Information
-                        </h3>
+                        <div className="mb-4 flex items-center gap-2">
+                            <h3 className="text-lg font-bold text-gray-900">
+                                Prop Account Information
+                            </h3>
+                            <button
+                                onClick={() => setIsEditModalOpen(true)}
+                                className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                title="Edit account details"
+                            >
+                                <Pencil className="h-4 w-4" />
+                            </button>
+                        </div>
                         <div className="space-y-1 text-sm text-gray-600">
                             <p>
                                 <span className="font-medium text-gray-500">Prop Account ID:</span>{" "}
-                                {id}
+                                {account.login_id || id}
                             </p>
                             <p>
                                 <span className="font-medium text-gray-500">Password:</span>{" "}
-                                {password}
+                                {account.password || password}
                             </p>
                             <p>
                                 <span className="font-medium text-gray-500">Account Name:</span>{" "}
-                                {name}
+                                {account.propfirm_name || name}
+                            </p>
+                            <p>
+                                <span className="font-medium text-gray-500">Server Name:</span>{" "}
+                                {account.server_name || "-"}
+                            </p>
+                            <p>
+                                <span className="font-medium text-gray-500">Platform:</span>{" "}
+                                {account.trading_platform || "-"}
                             </p>
                         </div>
                     </div>
                     <button
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => setIsInfoModalOpen(true)}
                         className="text-sm font-medium text-blue-600 hover:underline"
                     >
                         Check Prop firm account full information
                     </button>
                 </div>
+
 
                 {/* Progress Stepper */}
                 <div className="mx-auto max-w-3xl">
@@ -163,10 +184,18 @@ export function AccountCard({
             </div>
 
             <AccountInfoModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isInfoModalOpen}
+                onClose={() => setIsInfoModalOpen(false)}
                 account={account}
+            />
+
+            <AccountEditModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                account={account}
+                onUpdate={(updatedAccount) => setAccount(updatedAccount)}
             />
         </>
     );
 }
+

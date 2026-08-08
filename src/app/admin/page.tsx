@@ -196,7 +196,7 @@ export default function AdminDashboard() {
                             </div>
                             <h3 className="text-lg font-bold text-slate-900">Recent Paid Orders</h3>
                         </div>
-                        <Link href="/admin/prop-firm" className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium">
+                        <Link href="/admin/payments" className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium">
                             View All <ArrowRight className="w-4 h-4" />
                         </Link>
                     </div>

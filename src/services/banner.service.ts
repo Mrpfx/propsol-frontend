@@ -15,6 +15,11 @@ export const bannerService = {
         return response.data;
     },
 
+    async getActive(): Promise<Banner[]> {
+        const response = await api.get<Banner[]>("/banners/active");
+        return response.data;
+    },
+
     async getById(id: string): Promise<Banner> {
         const response = await api.get<Banner>(`/banners/${id}`);
         return response.data;

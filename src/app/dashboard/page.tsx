@@ -1,27 +1,37 @@
-// @ts-nocheck
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardHero } from "@/components/dashboard/DashboardHero";
 import { AccountList } from "@/components/dashboard/AccountList";
 import { HistoryView } from "@/components/dashboard/HistoryView";
 import { NotificationsView } from "@/components/dashboard/NotificationsView";
 import { ReferralsView } from "@/components/dashboard/ReferralsView";
+import Footer from "@/components/layout/Footer";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { userService, User } from "@/services/user.service";
 import { propFirmService, PropFirmRegistration } from "@/services/prop-firm.service";
 
 type Tab = "all" | "history" | "notifications" | "referrals";
 
-export default function DashboardPage() {
+function DashboardContent() {
+    const searchParams = useSearchParams();
     const [activeTab, setActiveTab] = useState<Tab>("all");
     const [user, setUser] = useState<User | undefined>(undefined);
     const [accounts, setAccounts] = useState<PropFirmRegistration[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const tabParam = searchParams.get("tab");
+        if (tabParam && ["all", "history", "notifications", "referrals"].includes(tabParam)) {
+            setActiveTab(tabParam as Tab);
+        }
+    }, [searchParams]);
+
+    useEffect(() => {
         // Try to load user from local storage first for immediate display
-        const storedUser = localStorage.getItem('user_data');
+        const storedUser = localStorage.getItem("user_data");
         if (storedUser) {
             try {
                 setUser(JSON.parse(storedUser));
@@ -41,8 +51,11 @@ export default function DashboardPage() {
 
             // Fetch Accounts Data
             try {
-                const accountsData = await propFirmService.getUserRegistrations();
-                setAccounts(accountsData);
+                const registrations = await propFirmService.getUserRegistrations();
+                const filteredAccounts = registrations.filter((reg: any) =>
+                    reg.payment_status && ["completed", "successful", "finished", "confirmed"].includes(reg.payment_status)
+                );
+                setAccounts(filteredAccounts);
             } catch (error) {
                 console.error("Error fetching accounts data:", error);
             } finally {
@@ -54,7 +67,7 @@ export default function DashboardPage() {
     }, []);
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+        return <LoadingSpinner message="Loading Dashboard..." />;
     }
 
     return (
@@ -113,6 +126,15 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={<LoadingSpinner message="Loading Dashboard..." />}>
+            <DashboardContent />
+        </Suspense>
     );
 }
