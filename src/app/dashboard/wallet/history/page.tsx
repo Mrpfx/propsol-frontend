@@ -15,6 +15,9 @@ import { propFirmService } from '@/services/prop-firm.service';
 import { notificationService } from '@/services/notification.service';
 import { api } from '@/lib/api';
 
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { walletService } from '@/services/wallet.service';
+
 const bannerService = {
   getAll: async () => (await api.get('/banner-ads/')).data,
   create: async (data) => (await api.post('/banner-ads/', data)).data,
@@ -49,6 +52,8 @@ const supportService = {
 
 const createProxy = () => new Proxy(LucideIcons, {
   get(target, prop) {
+    if (prop === 'DashboardHeader') return DashboardHeader;
+    if (prop === 'walletService') return walletService;
     if (prop === 'default') return Link;
     if (prop === 'useRouter') return useRouter;
     if (prop === 'useSearchParams') return useSearchParams;

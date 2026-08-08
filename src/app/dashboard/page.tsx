@@ -9,7 +9,7 @@ import { HistoryView } from "@/components/dashboard/HistoryView";
 import { NotificationsView } from "@/components/dashboard/NotificationsView";
 import { ReferralsView } from "@/components/dashboard/ReferralsView";
 import Footer from "@/components/layout/Footer";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import Loading, { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { userService, User } from "@/services/user.service";
 import { propFirmService, PropFirmRegistration } from "@/services/prop-firm.service";
 
@@ -67,7 +67,7 @@ function DashboardContent() {
     }, []);
 
     if (loading) {
-        return <LoadingSpinner message="Loading Dashboard..." />;
+        return <Loading message="Loading Dashboard..." />;
     }
 
     return (
@@ -133,7 +133,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
     return (
-        <Suspense fallback={<LoadingSpinner message="Loading Dashboard..." />}>
+        <Suspense fallback={<Loading message="Loading Dashboard..." />}>
             <DashboardContent />
         </Suspense>
     );

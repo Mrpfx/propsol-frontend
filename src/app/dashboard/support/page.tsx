@@ -15,6 +15,10 @@ import { propFirmService } from '@/services/prop-firm.service';
 import { notificationService } from '@/services/notification.service';
 import { api } from '@/lib/api';
 
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { walletService } from '@/services/wallet.service';
+import { supportTicketService } from '@/services/support-ticket.service';
+
 const bannerService = {
   getAll: async () => (await api.get('/banner-ads/')).data,
   create: async (data) => (await api.post('/banner-ads/', data)).data,
@@ -49,6 +53,9 @@ const supportService = {
 
 const createProxy = () => new Proxy(LucideIcons, {
   get(target, prop) {
+    if (prop === 'DashboardHeader') return DashboardHeader;
+    if (prop === 'walletService') return walletService;
+    if (prop === 'supportTicketService' || prop === 'supportService' || prop === 'ticketService') return supportTicketService;
     if (prop === 'default') return Link;
     if (prop === 'useRouter') return useRouter;
     if (prop === 'useSearchParams') return useSearchParams;
@@ -66,7 +73,6 @@ const createProxy = () => new Proxy(LucideIcons, {
     if (prop === 'bookingLinkService') return bookingLinkService;
     if (prop === 'planService') return planService;
     if (prop === 'payoutService') return payoutService;
-    if (prop === 'supportService' || prop === 'ticketService') return supportService;
     if (target[prop]) return target[prop];
     return LucideIcons[prop] || LucideIcons.HelpCircle || (() => null);
   }

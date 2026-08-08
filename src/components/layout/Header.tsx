@@ -13,7 +13,7 @@ const bookingLinkService = {
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [calendlyLink, setCalendlyLink] = useState("https://calendly.com/hello-propfirmsolutions/30min");
+  const [calendlyLink, setCalendlyLink] = useState("https://calendly.com/hello-propfirmsol/30min");
   const pathname = usePathname();
   const isHome = pathname === "/";
 
@@ -21,8 +21,11 @@ export default function Header() {
     (async () => {
       try {
         const links = await bookingLinkService.getAllBookingLinks();
-        if (links && links.length > 0 && links[0].url) {
-          setCalendlyLink(links[0].url);
+        if (links && links.length > 0) {
+          const active = links.find((l: any) => l.is_active);
+          if (active && active.url) {
+            setCalendlyLink(active.url);
+          }
         }
       } catch (err) {}
     })();
@@ -42,14 +45,14 @@ export default function Header() {
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link href="/" className="flex items-center gap-0.5">
-            <span className="text-2xl font-bold text-primary">Prop</span>
+            <span className="text-2xl font-bold text-blue-600">Prop</span>
             <span className={`text-2xl font-bold ${isHome ? "text-white" : "text-slate-900"}`}>Sol</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map(link => (
               <Link
                 href={link.href}
-                className={`text-sm font-medium transition-colors ${isHome ? "text-slate-200 hover:text-white" : "text-slate-600 hover:text-primary"}`}
+                className={`text-sm font-medium transition-colors ${isHome ? "text-slate-200 hover:text-white" : "text-slate-600 hover:text-blue-600"}`}
                 key={link.name}
               >
                 {link.name}
@@ -78,19 +81,19 @@ export default function Header() {
         <div className="hidden md:flex items-center gap-4 ml-auto">
           <Link
             href="/signup"
-            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors ${isHome ? "text-white bg-white/10 hover:bg-white/20" : "text-primary bg-primary/10 hover:bg-primary/20"}`}
+            className={`px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors ${isHome ? "text-white bg-white/10 hover:bg-white/20" : "text-blue-600 bg-blue-50 hover:bg-blue-100"}`}
           >
             Sign Up
           </Link>
           <Link
             href="/signin"
-            className="px-6 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25"
+            className="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/25"
           >
             Sign In
           </Link>
         </div>
         <button
-          className={`md:hidden p-2 transition-colors ${isHome ? "text-slate-200 hover:text-white" : "text-slate-600 hover:text-primary"}`}
+          className={`md:hidden p-2 transition-colors ${isHome ? "text-slate-200 hover:text-white" : "text-slate-600 hover:text-blue-600"}`}
           onClick={() => setIsOpen(true)}
         >
           <Menu className="w-6 h-6" />
@@ -104,10 +107,10 @@ export default function Header() {
         >
           <div className="container mx-auto px-4 h-20 flex items-center justify-between border-b border-slate-100">
             <Link href="/" className="flex items-center gap-0.5" onClick={() => setIsOpen(false)}>
-              <span className="text-2xl font-bold text-primary">Prop</span>
+              <span className="text-2xl font-bold text-blue-600">Prop</span>
               <span className="text-2xl font-bold text-slate-900">Sol</span>
             </Link>
-            <button className="p-2 text-slate-600 hover:text-primary transition-colors" onClick={() => setIsOpen(false)}>
+            <button className="p-2 text-slate-600 hover:text-blue-600 transition-colors" onClick={() => setIsOpen(false)}>
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -116,7 +119,7 @@ export default function Header() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-lg font-medium text-slate-900 hover:text-primary transition-colors"
+                className="text-lg font-medium text-slate-900 hover:text-blue-600 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
@@ -125,7 +128,7 @@ export default function Header() {
             <div className="flex flex-col gap-4 w-full px-8 mt-4">
               <Link
                 href="/signin"
-                className="w-full py-3 text-center text-lg font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25"
+                className="w-full py-3 text-center text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/25"
                 onClick={() => setIsOpen(false)}
               >
                 Sign In
