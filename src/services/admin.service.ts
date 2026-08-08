@@ -100,7 +100,7 @@ export const adminService = {
     },
 
     async getPayments(): Promise<any[]> {
-        const response = await api.get<any[]>('/payments/');
+        const response = await api.get<any[]>('/payments');
         return response.data;
     },
 

@@ -11,7 +11,7 @@ export interface BookingLink {
 
 export const bookingLinkService = {
     async getAll(): Promise<BookingLink[]> {
-        const response = await api.get<BookingLink[]>("/booking-links/");
+        const response = await api.get<BookingLink[]>("/booking-links");
         return response.data;
     },
 
@@ -21,7 +21,7 @@ export const bookingLinkService = {
     },
 
     async create(data: Partial<BookingLink>): Promise<BookingLink> {
-        const response = await api.post<BookingLink>("/booking-links/", data);
+        const response = await api.post<BookingLink>("/booking-links", data);
         return response.data;
     },
 

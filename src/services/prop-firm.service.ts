@@ -24,7 +24,7 @@ export interface PropFirmRegistration {
 export const propFirmService = {
     async getUserRegistrations(status?: string): Promise<PropFirmRegistration[]> {
         const params = status ? { status } : {};
-        const response = await api.get<PropFirmRegistration[]>('/prop-firm/', { params });
+        const response = await api.get<PropFirmRegistration[]>('/prop-firm', { params });
         return response.data;
     },
 
@@ -34,7 +34,7 @@ export const propFirmService = {
     },
 
     async createRegistration(data: any): Promise<PropFirmRegistration> {
-        const response = await api.post<PropFirmRegistration>('/prop-firm/', data);
+        const response = await api.post<PropFirmRegistration>('/prop-firm', data);
         return response.data;
     },
 

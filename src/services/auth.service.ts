@@ -119,7 +119,7 @@ export const authService = {
     },
 
     async register(data: { email: string; name: string; password: string; referred_by?: string }): Promise<any> {
-        const response = await api.post('/users/', {
+        const response = await api.post('/users', {
             email: data.email,
             name: data.name,
             password: data.password,

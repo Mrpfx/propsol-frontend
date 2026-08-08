@@ -11,7 +11,7 @@ export interface Banner {
 
 export const bannerService = {
     async getAll(): Promise<Banner[]> {
-        const response = await api.get<Banner[]>("/banners/");
+        const response = await api.get<Banner[]>("/banners");
         return response.data;
     },
 
@@ -26,7 +26,7 @@ export const bannerService = {
     },
 
     async create(data: Partial<Banner>): Promise<Banner> {
-        const response = await api.post<Banner>("/banners/", data);
+        const response = await api.post<Banner>("/banners", data);
         return response.data;
     },
 

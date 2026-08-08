@@ -21,12 +21,12 @@ export interface PaymentCreate {
 
 export const paymentService = {
     async createPayment(data: PaymentCreate): Promise<Payment> {
-        const response = await api.post<Payment>('/payments/', data);
+        const response = await api.post<Payment>('/payments', data);
         return response.data;
     },
 
     async getUserPayments(): Promise<Payment[]> {
-        const response = await api.get<Payment[]>('/payments/');
+        const response = await api.get<Payment[]>('/payments');
         return response.data;
     },
 
