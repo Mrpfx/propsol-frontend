@@ -52,3 +52,5 @@ temp_interactive_push.bat
 propsol_frontend_cpanel_deploy.zip
 .env.production
 .env
+AGENTS.md
+CLAUDE.md
