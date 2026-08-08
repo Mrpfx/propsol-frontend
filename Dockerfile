@@ -13,6 +13,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Production env vars are inlined at build time
+ARG NEXT_PUBLIC_API_URL=https://propsol-backend-production.up.railway.app/api/v1
+ARG BACKEND_URL=https://propsol-backend-production.up.railway.app
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV BACKEND_URL=${BACKEND_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
