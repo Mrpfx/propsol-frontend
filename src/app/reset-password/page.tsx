@@ -18,7 +18,6 @@ function ResetPasswordContent() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
-    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         if (!token) {
@@ -45,11 +44,7 @@ function ResetPasswordContent() {
         }
 
         try {
-            if (isAdmin) {
-                await authService.resetAdminPassword(token, newPassword);
-            } else {
-                await authService.resetPassword(token, newPassword);
-            }
+            await authService.resetPassword(token, newPassword);
             const successMessage = "Password reset successfully. You can now login.";
             setMessage(successMessage);
             toast.success(successMessage);
@@ -142,19 +137,6 @@ function ResetPasswordContent() {
                                 required
                                 className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#1234A6] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-slate-600 placeholder:text-gray-300"
                             />
-                        </div>
-
-                        <div className="flex items-center">
-                            <input
-                                id="admin-checkbox"
-                                type="checkbox"
-                                checked={isAdmin}
-                                onChange={(e) => setIsAdmin(e.target.checked)}
-                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                            />
-                            <label htmlFor="admin-checkbox" className="ml-2 block text-sm text-gray-900">
-                                I am an Admin
-                            </label>
                         </div>
 
                         <button
