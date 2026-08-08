@@ -170,9 +170,9 @@ export default function AdminManagementPage() {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                                            adm.Status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                                            (adm.Status ?? adm.status ?? true) ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                                         }`}>
-                                            {adm.Status ? "Active" : "Inactive"}
+                                            {(adm.Status ?? adm.status ?? true) ? "Active" : "Inactive"}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right space-x-2 whitespace-nowrap">

@@ -52,7 +52,22 @@ export interface UserPurchasedPackageRead {
 
 export const adminService = {
     async createAdmin(data: AdminCreate): Promise<Admin> {
-        const response = await api.post<Admin>('/admin/', data);
+        const response = await api.post<Admin>('/admin', data);
+        return response.data;
+    },
+
+    async getAdmins(): Promise<Admin[]> {
+        const response = await api.get<Admin[]>('/admin');
+        return response.data;
+    },
+
+    async updateAdmin(adminId: string, data: Partial<Admin> & { roles?: string[]; password?: string }): Promise<Admin> {
+        const response = await api.put<Admin>(`/admin/${adminId}`, data);
+        return response.data;
+    },
+
+    async deleteAdmin(adminId: string): Promise<Admin> {
+        const response = await api.delete<Admin>(`/admin/${adminId}`);
         return response.data;
     },
 
