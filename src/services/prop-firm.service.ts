@@ -39,7 +39,9 @@ export const propFirmService = {
     },
 
     async createWhopCheckoutLink(orderId: string): Promise<{ checkout_url: string }> {
-        const response = await api.post<{ checkout_url: string }>(`/prop-firm/whop-checkout-link/${orderId}`);
+        const response = await api.post<{ checkout_url: string }>('/whop/checkout-link', {
+            registration_id: orderId
+        });
         return response.data;
     },
 
