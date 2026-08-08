@@ -50,3 +50,5 @@ temp_interactive_push.bat
 /*.log
 *.zip
 propsol_frontend_cpanel_deploy.zip
+.env.production
+.env
