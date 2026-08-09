@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import { useState, useEffect } from "react";
@@ -88,7 +87,7 @@ export default function AdminDashboard() {
 
                 const getVal = (res: any, fallback: any) => res.status === "fulfilled" ? res.value : fallback;
                 const propFirms = getVal(regRes, []);
-                const activeCount = propFirms.filter((a: any) => a.account_status === "in_progress").length;
+                const activeCount = propFirms.filter((a: any) => a.account_status === "in_progress" || a.account_status === "passed").length;
                 const totalRev = propFirms.reduce((acc: number, b: any) => {
                     if (b.account_status === "in_progress" || b.account_status === "passed" || (b.account_status === "failed" && b.pass_type === "standard_pass")) {
                         return acc + (b.propfirm_account_cost || 0);
@@ -100,16 +99,22 @@ export default function AdminDashboard() {
                 const baseStats = getVal(statsRes, {});
                 setStats({
                     ...baseStats,
-                    active_prop_firms: activeCount,
-                    total_revenue: totalRev,
-                    pending_registrations: pendingCount
+                    active_prop_firms: baseStats.active_prop_firms !== undefined ? baseStats.active_prop_firms : activeCount,
+                    total_revenue: baseStats.total_revenue ? baseStats.total_revenue : totalRev,
+                    pending_registrations: baseStats.pending_registrations !== undefined ? baseStats.pending_registrations : pendingCount
                 });
-                setAffiliateStats(getVal(affStatsRes, {}));
+
+                const affData = getVal(affStatsRes, {});
+                setAffiliateStats(affData);
                 setTopAffiliates(getVal(topAffRes, []));
 
                 const paidOrders = propFirms
-                    .filter((a: any) => ["finished", "confirmed", "completed", "successful"].includes(a.payment_status))
-                    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                    .filter((a: any) => {
+                        const status = (a.payment_status || "").toLowerCase();
+                        return ["finished", "confirmed", "completed", "successful"].includes(status) || 
+                               ["in_progress", "passed"].includes((a.account_status || "").toLowerCase());
+                    })
+                    .sort((a: any, b: any) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
                     .slice(0, 5);
                 setRecentOrders(paidOrders);
             } catch (err) {
@@ -132,55 +137,54 @@ export default function AdminDashboard() {
     const totalRevenue = stats?.total_revenue || 0;
     const activePropFirms = stats?.active_prop_firms || 0;
     const pendingRegistrations = stats?.pending_registrations || 0;
-    const activeAffiliatesCount = affiliateStats?.active_affiliates_count || 0;
+    const activeAffiliatesCount = stats?.active_affiliates_count || affiliateStats?.active_affiliates_count || 0;
 
     const formatCurrency = (val: number) => new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD"
-    }).format(val);
+    }).format(val || 0);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 p-6">
             <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-indigo-600/5 rounded-2xl -z-10" />
                 <div className="py-2">
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                         Dashboard Overview
                     </h2>
-                    <p className="text-slate-500 mt-1">Welcome back, here's what's happening today.</p>
+                    <p className="text-slate-500 mt-1 text-sm">Welcome back, here's what's happening today.</p>
                 </div>
             </div>
 
             <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 <StatsCard
                     title="Total Users"
-                    value={totalUsers}
+                    value={totalUsers.toLocaleString()}
                     icon={Users}
                     color="blue"
                     trend={{ value: 12, isPositive: true }}
                 />
                 <StatsCard
-                    title="Earning Affiliates"
-                    value={activeAffiliatesCount}
+                    title="Active Affiliates"
+                    value={activeAffiliatesCount.toLocaleString()}
                     icon={Share2}
                     color="indigo"
                 />
                 <StatsCard
                     title="Total Revenue"
-                    value={`$${totalRevenue.toLocaleString()}`}
+                    value={formatCurrency(totalRevenue)}
                     icon={DollarSign}
                     color="green"
                     trend={{ value: 8, isPositive: true }}
                 />
                 <StatsCard
                     title="Active Prop Firms"
-                    value={activePropFirms}
+                    value={activePropFirms.toLocaleString()}
                     icon={Briefcase}
                     color="purple"
                 />
                 <StatsCard
                     title="Pending Registrations"
-                    value={pendingRegistrations}
+                    value={pendingRegistrations.toLocaleString()}
                     icon={Activity}
                     color="orange"
                 />
@@ -188,10 +192,10 @@ export default function AdminDashboard() {
 
             <div className="grid gap-6 lg:grid-cols-2">
                 {/* Recent Paid Orders Card */}
-                <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+                <div className="rounded-2xl bg-white p-6 shadow-md border border-slate-100">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg shadow-green-500/20">
+                            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-md shadow-green-500/20">
                                 <CheckCircle className="w-5 h-5 text-white" />
                             </div>
                             <h3 className="text-lg font-bold text-slate-900">Recent Paid Orders</h3>
@@ -210,13 +214,15 @@ export default function AdminDashboard() {
                                             {(order.propfirm_name || "PF").slice(0, 2).toUpperCase()}
                                         </div>
                                         <div>
-                                            <p className="font-medium text-slate-900 text-sm">{order.propfirm_name}</p>
-                                            <p className="text-xs text-slate-500">Order: {order.order_id}</p>
+                                            <p className="font-medium text-slate-900 text-sm">{order.propfirm_name || "Prop Firm Order"}</p>
+                                            <p className="text-xs text-slate-500">Order: {order.order_id || order.id?.slice(0, 8)}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <p className="font-bold text-green-600">{formatCurrency(order.propfirm_account_cost)}</p>
-                                        <p className="text-xs text-slate-500">{new Date(order.created_at).toLocaleDateString()}</p>
+                                        <p className="text-xs text-slate-500">
+                                            {order.created_at ? new Date(order.created_at).toLocaleDateString() : "Recent"}
+                                        </p>
                                     </div>
                                 </div>
                             ))}
@@ -224,16 +230,16 @@ export default function AdminDashboard() {
                     ) : (
                         <div className="flex flex-col items-center justify-center py-8 text-slate-400">
                             <Clock className="w-12 h-12 mb-2 opacity-50" />
-                            <p className="text-sm">No paid orders yet</p>
+                            <p className="text-sm font-medium">No paid orders found</p>
                         </div>
                     )}
                 </div>
 
                 {/* Top Affiliates Card */}
-                <div className="rounded-2xl bg-white p-6 shadow-lg border border-slate-100">
+                <div className="rounded-2xl bg-white p-6 shadow-md border border-slate-100">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-xl shadow-lg shadow-purple-500/20">
+                            <div className="p-2 bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-xl shadow-md shadow-purple-500/20">
                                 <Share2 className="w-5 h-5 text-white" />
                             </div>
                             <h3 className="text-lg font-bold text-slate-900">Top Affiliates</h3>
@@ -246,7 +252,7 @@ export default function AdminDashboard() {
                     {topAffiliates.length > 0 ? (
                         <div className="space-y-3">
                             {topAffiliates.map((aff: any, idx: number) => (
-                                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors" key={aff.user_id}>
+                                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors" key={aff.user_id || idx}>
                                     <div className="flex items-center gap-3">
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
                                             idx === 0 ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white" :
@@ -263,7 +269,7 @@ export default function AdminDashboard() {
                                     </div>
                                     <div className="text-right">
                                         <p className="font-bold text-green-600">{formatCurrency(aff.total_earnings)}</p>
-                                        <p className="text-xs text-slate-500">{aff.total_referrals} referrals</p>
+                                        <p className="text-xs text-slate-500">{aff.total_referrals || 0} referrals</p>
                                     </div>
                                 </div>
                             ))}
@@ -271,7 +277,7 @@ export default function AdminDashboard() {
                     ) : (
                         <div className="flex flex-col items-center justify-center py-8 text-slate-400">
                             <Users className="w-12 h-12 mb-2 opacity-50" />
-                            <p className="text-sm">No affiliates yet</p>
+                            <p className="text-sm font-medium">No affiliates registered yet</p>
                         </div>
                     )}
                 </div>

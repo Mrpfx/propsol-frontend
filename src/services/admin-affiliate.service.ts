@@ -52,6 +52,13 @@ export const adminAffiliateService = {
         return response.data;
     },
 
+    async getTopAffiliates(limit: number = 10): Promise<AffiliateUser[]> {
+        const response = await api.get<AffiliateUser[]>("/admin/affiliates/top", {
+            params: { limit }
+        });
+        return response.data;
+    },
+
     async getAffiliateDetails(userId: string): Promise<AffiliateUser> {
         const response = await api.get<AffiliateUser>(`/admin/affiliates/users/${userId}`);
         return response.data;
