@@ -90,20 +90,51 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
   
   // State for progressive vertical step flow
   const [accountType, setAccountType] = useState<'challenge' | 'instant' | null>(defaultAccountType);
-  const [propFirm, setPropFirm] = useState<string | null>('TenTrade');
-  const [accountSize, setAccountSize] = useState<number | null>(50000);
+  const [propFirm, setPropFirm] = useState<string | null>(null);
+  const [accountSize, setAccountSize] = useState<number | null>(null);
+
+  // Reset selections when modal opens or defaultAccountType changes
+  React.useEffect(() => {
+    if (isOpen) {
+      setAccountType(defaultAccountType || 'challenge');
+      setPropFirm(null);
+      setAccountSize(null);
+    }
+  }, [isOpen, defaultAccountType]);
 
   if (!isOpen) return null;
 
-  const selectedSizeObj = ACCOUNT_SIZES.find(s => s.size === accountSize) || ACCOUNT_SIZES[0];
-  const totalFee = selectedSizeObj.fee;
+  const selectedFirmObj = PROP_FIRMS.find(f => f.id === propFirm);
+  const selectedSizeObj = ACCOUNT_SIZES.find(s => s.size === accountSize);
+  const totalFee = selectedSizeObj ? selectedSizeObj.fee : 0;
+
+  const handleAccountTypeSelect = (type: 'challenge' | 'instant') => {
+    setAccountType(type);
+    // Reset subsequent choices if user changes account type
+    setPropFirm(null);
+    setAccountSize(null);
+  };
+
+  const handlePropFirmSelect = (firmId: string) => {
+    setPropFirm(firmId);
+    // If account size was not set, reset or keep null
+    if (!accountSize) {
+      setAccountSize(null);
+    }
+  };
+
+  const handleAccountSizeSelect = (size: number) => {
+    setAccountSize(size);
+  };
 
   const handleContinueToPayment = () => {
+    if (!accountType || !propFirm || !accountSize) return;
+
     const params = new URLSearchParams({
       model: 'partnership',
-      accountType: accountType || 'challenge',
-      propFirm: propFirm || 'TenTrade',
-      accountSize: (accountSize || 50000).toString(),
+      accountType: accountType,
+      propFirm: propFirm,
+      accountSize: accountSize.toString(),
       price: totalFee.toString()
     });
     onClose();
@@ -123,7 +154,7 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
             </div>
             <div>
               <h2 className="text-xl font-bold text-white tracking-tight">Start Partnership</h2>
-              <p className="text-xs text-slate-400">Choose your preferred options and we'll handle the rest while you earn real profits.</p>
+              <p className="text-xs text-slate-400">Step-by-step selection for your partnership account setup.</p>
             </div>
           </div>
           <button 
@@ -139,15 +170,23 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
           
           {/* STEP 1: ACCOUNT TYPE */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-              <span>1. ACCOUNT TYPE</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">1</span>
+                <span>ACCOUNT TYPE</span>
+              </div>
+              {accountType && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Selected
+                </span>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Challenge Account Card */}
               <button
                 type="button"
-                onClick={() => setAccountType('challenge')}
+                onClick={() => handleAccountTypeSelect('challenge')}
                 className={`relative text-left p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${
                   accountType === 'challenge'
                     ? 'bg-blue-950/40 border-blue-500 shadow-lg shadow-blue-600/10'
@@ -176,7 +215,7 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
               {/* Instant Funded Account Card */}
               <button
                 type="button"
-                onClick={() => setAccountType('instant')}
+                onClick={() => handleAccountTypeSelect('instant')}
                 className={`relative text-left p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${
                   accountType === 'instant'
                     ? 'bg-blue-950/40 border-blue-500 shadow-lg shadow-blue-600/10'
@@ -204,11 +243,23 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
             </div>
           </div>
 
-          {/* STEP 2: SELECT PROP FIRM (Unfolds vertically) */}
+          {/* STEP 2: SELECT PROP FIRM (Unfolds vertically when account type is active) */}
           {accountType && (
-            <div className="space-y-3 animate-slideDown">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                <span>2. SELECT PROP FIRM</span>
+            <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                  <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">2</span>
+                  <span>SELECT PROP FIRM</span>
+                </div>
+                {propFirm ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> {selectedFirmObj?.name}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-amber-400 font-medium animate-pulse">
+                    Select a prop firm to continue
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -218,10 +269,10 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
                     <button
                       key={firm.id}
                       type="button"
-                      onClick={() => setPropFirm(firm.id)}
+                      onClick={() => handlePropFirmSelect(firm.id)}
                       className={`relative p-4 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-2 min-h-[90px] ${
                         isSelected
-                          ? 'bg-blue-950/40 border-blue-500 shadow-md shadow-blue-500/10'
+                          ? 'bg-blue-950/40 border-blue-500 shadow-md shadow-blue-500/10 ring-2 ring-blue-500/20'
                           : 'bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60'
                       }`}
                     >
@@ -251,11 +302,23 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
             </div>
           )}
 
-          {/* STEP 3: SELECT ACCOUNT SIZE (Unfolds vertically) */}
+          {/* STEP 3: SELECT ACCOUNT SIZE (Unfolds vertically once prop firm is selected) */}
           {accountType && propFirm && (
-            <div className="space-y-3 animate-slideDown">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                <span>3. SELECT ACCOUNT SIZE</span>
+            <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                  <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">3</span>
+                  <span>SELECT ACCOUNT SIZE</span>
+                </div>
+                {accountSize ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> {selectedSizeObj?.label}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-amber-400 font-medium animate-pulse">
+                    Select account size to see pricing
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -265,10 +328,10 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
                     <button
                       key={item.size}
                       type="button"
-                      onClick={() => setAccountSize(item.size)}
+                      onClick={() => handleAccountSizeSelect(item.size)}
                       className={`relative p-3.5 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center ${
                         isSelected
-                          ? 'bg-blue-950/50 border-blue-500 shadow-md shadow-blue-500/10'
+                          ? 'bg-blue-950/50 border-blue-500 shadow-md shadow-blue-500/10 ring-2 ring-blue-500/20'
                           : 'bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60'
                       }`}
                     >
@@ -304,14 +367,15 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
             </div>
           )}
 
-          {/* STEP 4 & 5: SUMMARY & NEXT STEP (Unfolds vertically once size selected) */}
+          {/* STEP 4 & 5: SUMMARY & NEXT STEP (Unfolds vertically once size is selected) */}
           {accountType && propFirm && accountSize && (
-            <div className="space-y-6 pt-2 animate-slideDown">
+            <div className="space-y-6 animate-slideDown border-t border-slate-800/60 pt-6">
               
               {/* STEP 4: SUMMARY */}
               <div className="space-y-3">
-                <div className="text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                  4. SUMMARY
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                  <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">4</span>
+                  <span>PARTNERSHIP SUMMARY</span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#0f1738]/80 border border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -331,7 +395,7 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
                     </div>
                     <div>
                       <div className="text-[11px] text-slate-400">Prop Firm</div>
-                      <div className="text-xs font-bold text-white">{propFirm}</div>
+                      <div className="text-xs font-bold text-white">{selectedFirmObj?.name || propFirm}</div>
                     </div>
                   </div>
 
@@ -359,8 +423,9 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
 
               {/* STEP 5: NEXT STEP */}
               <div className="space-y-3">
-                <div className="text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                  5. NEXT STEP
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                  <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">5</span>
+                  <span>NEXT STEP & CONFIRMATION</span>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-blue-950/30 border border-blue-500/20 flex items-center gap-3 text-xs text-blue-200/90">

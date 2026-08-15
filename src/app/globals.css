@@ -49,6 +49,26 @@
       transform: rotate(45deg);
     }
   }
+
+  @keyframes slideDown {
+    0% {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 }
 
 :root {
@@ -81,3 +101,12 @@ body {
 @utility animate-spin-slow {
   animation: spin-slow 5s ease-in-out infinite;
 }
+
+@utility animate-slideDown {
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@utility animate-fadeIn {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+

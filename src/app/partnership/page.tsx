@@ -47,111 +47,181 @@ export default function PartnershipPage() {
       {/* Navigation Header */}
       <Header onOpenPartnershipModal={() => openModal('challenge')} />
 
-      {/* ================= HERO SECTION (DARK NAVY BLUE) ================= */}
-      <section className="relative pt-28 pb-20 md:pt-36 md:pb-24 bg-[#070c1e] text-white overflow-hidden border-b border-slate-800/80">
+      {/* ================= HERO SECTION (LIGHT-TO-DEEP ROYAL BLUE GRADIENT) ================= */}
+      <section className="relative pt-24 pb-8 sm:pt-28 md:pt-36 sm:pb-20 md:pb-24 bg-gradient-to-b lg:bg-gradient-to-r from-white via-white via-[70%] to-[#010a2b] text-slate-900 overflow-hidden border-b border-slate-200/80">
         
-        {/* Background glow and stock chart grid effect */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#101938_1px,transparent_1px),linear-gradient(to_bottom,#101938_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-        <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none" />
+        {/* Rich Deep Royal Blue Backdrop Overlay - Positioned exclusively at bottom on mobile behind the image */}
+        <div className="absolute bottom-0 right-0 w-full lg:w-[60%] h-[35%] lg:h-full bg-gradient-to-t lg:bg-gradient-to-r from-[#010821] via-[#021c6e]/90 to-transparent pointer-events-none z-0" />
+
+        {/* Deep Glowing Bloom behind trading chart visual */}
+        <div className="absolute bottom-4 lg:top-1/2 right-0 lg:-translate-y-1/2 w-[450px] sm:w-[750px] h-[450px] sm:h-[750px] bg-gradient-to-tr from-cyan-500/25 via-blue-600/45 to-indigo-900/60 rounded-full blur-[100px] sm:blur-[150px] pointer-events-none z-0" />
+
+        {/* Trading chart background visual & glowing neon signs on the right side */}
+        <div className="absolute top-0 right-0 w-full lg:w-3/5 h-full pointer-events-none overflow-hidden select-none z-0">
+          {/* Subtle Grid backdrop */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(56,189,248,0.18)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.18)_1px,transparent_1px)] bg-[size:2.5rem_2.5rem] [mask-image:radial-gradient(ellipse_70%_60%_at_75%_50%,#000_80%,transparent_100%)]" />
+
+          {/* Dynamic Trading Chart Line & Candlesticks SVG */}
+          <svg className="absolute top-0 right-0 w-full h-full opacity-70 mix-blend-screen" viewBox="0 0 1000 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="chartGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#023dc7ff" stopOpacity="0.05" />
+                <stop offset="50%" stopColor="#2a3acfff" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#456ac3ff" stopOpacity="0.6" />
+              </linearGradient>
+              <linearGradient id="lineGlow" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#2a3acfff" />
+                <stop offset="60%" stopColor="#456ac3ff" />
+                <stop offset="100%" stopColor="#5f7fd9ff" />
+              </linearGradient>
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            {/* Candlesticks in background */}
+            <g opacity="0.45">
+              {/* Bullish/Cyan candles */}
+              <rect x="520" y="380" width="10" height="90" fill="#22c55e" rx="2" />
+              <line x1="525" y1="360" x2="525" y2="490" stroke="#22c55e" strokeWidth="2" />
+
+              <rect x="610" y="290" width="12" height="120" fill="#38bdf8" rx="2" />
+              <line x1="616" y1="260" x2="616" y2="430" stroke="#38bdf8" strokeWidth="2" />
+
+              <rect x="700" y="220" width="14" height="150" fill="#38bdf8" rx="2" />
+              <line x1="707" y1="180" x2="707" y2="390" stroke="#38bdf8" strokeWidth="2" />
+
+              <rect x="790" y="160" width="12" height="130" fill="#22c55e" rx="2" />
+              <line x1="796" y1="130" x2="796" y2="310" stroke="#22c55e" strokeWidth="2" />
+
+              <rect x="880" y="90" width="16" height="180" fill="#38bdf8" rx="2" />
+              <line x1="888" y1="60" x2="888" y2="290" stroke="#38bdf8" strokeWidth="2" />
+            </g>
+
+            {/* Area Fill beneath chart line */}
+            <path
+              d="M 400 650 L 450 560 L 520 500 L 580 520 L 650 380 L 720 320 L 790 350 L 860 180 L 940 120 L 1000 80 L 1000 700 L 400 700 Z"
+              fill="url(#chartGradient)"
+            />
+
+            {/* Main Rising Trend Line */}
+            <path
+              d="M 400 650 L 450 560 L 520 500 L 580 520 L 650 380 L 720 320 L 790 350 L 860 180 L 940 120 L 1000 80"
+              stroke="url(#lineGlow)"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow)"
+            />
+
+            {/* Glowing Nodes on Trend Line */}
+            <circle cx="520" cy="500" r="6" fill="#385ef8ff" className="animate-pulse" />
+            <circle cx="650" cy="380" r="7" fill="#6084faff" className="animate-pulse" />
+            <circle cx="720" cy="320" r="6" fill="#3882f8ff" className="animate-pulse" />
+            <circle cx="860" cy="180" r="8" fill="#b593fdff" className="animate-pulse" />
+            <circle cx="940" cy="120" r="9" fill="#00f0ff" filter="url(#glow)" />
+          </svg>
+        </div>
 
         <div className="container mx-auto px-4 relative z-10 max-w-7xl">
           
           {/* Top Pill Badges */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-blue-600 text-white text-xs font-bold uppercase tracking-wider shadow-md shadow-blue-600/20">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5 sm:mb-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-600 text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-wider shadow-md shadow-blue-600/20">
               PROPSOL PARTNERSHIP
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0d1738] border border-blue-500/30 text-xs font-semibold text-white">
-                <div className="w-5 h-5 rounded-md bg-cyan-500 text-slate-950 flex items-center justify-center font-bold text-[10px]">
+            <div className="grid grid-cols-2 gap-1.5 sm:gap-3 w-full sm:w-auto">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#09122e] border border-cyan-500/40 text-[9px] xs:text-[10px] sm:text-xs font-semibold text-white shadow-lg min-w-0">
+                <div className="w-4 h-4 sm:w-6 sm:h-6 rounded-lg bg-cyan-500 text-slate-950 flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0">
                   ⚡
                 </div>
-                <span><strong className="text-cyan-400">CHALLENGE ACCOUNT</strong> Pass & Get Funded</span>
+                <span className="truncate"><strong className="text-cyan-400 font-extrabold">CHALLENGE</strong> <span className="text-slate-300">ACCOUNT</span></span>
               </div>
 
-              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0d1738] border border-amber-500/30 text-xs font-semibold text-white">
-                <div className="w-5 h-5 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-[10px]">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#09122e] border border-amber-500/40 text-[9px] xs:text-[10px] sm:text-xs font-semibold text-white shadow-lg min-w-0">
+                <div className="w-4 h-4 sm:w-6 sm:h-6 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0">
                   🛡️
                 </div>
-                <span><strong className="text-amber-400">INSTANT FUNDED ACCOUNT</strong> Start Trading Live</span>
+                <span className="truncate"><strong className="text-amber-400 font-extrabold">INSTANT</strong> <span className="text-slate-300">FUNDED</span></span>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-12 items-center">
             
             {/* Left Content */}
-            <div className="lg:col-span-6 space-y-6 text-left">
+            <div className="lg:col-span-6 space-y-3.5 lg:space-y-6 text-left">
               <div>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[1.15] tracking-tight">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 leading-[1.15] tracking-tight">
                   We Pass Your Challenge.<br/>
                   We Do the Trading.<br/>
-                  <span className="text-blue-500">We Share the Profits.</span>
+                  <span className="text-blue-600">We Share the Profits.</span>
                 </h1>
               </div>
 
-              <div className="space-y-2.5 max-w-lg">
-                <div className="flex items-center gap-3 text-slate-200 text-sm font-semibold">
-                  <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
+              <div className="space-y-2 sm:space-y-3 max-w-lg">
+                <div className="flex items-center gap-2.5 sm:gap-3 text-slate-800 text-xs sm:text-sm font-bold">
+                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
                   <span>Bring your challenge or instant funded account.</span>
                 </div>
 
-                <div className="flex items-center gap-3 text-slate-200 text-sm font-semibold">
-                  <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-2.5 sm:gap-3 text-slate-800 text-xs sm:text-sm font-bold">
+                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
                   <span>We'll handle all of the trading.</span>
                 </div>
 
-                <div className="flex items-center gap-3 text-slate-200 text-sm font-semibold">
-                  <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-2.5 sm:gap-3 text-slate-800 text-xs sm:text-sm font-bold">
+                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
                   <span>You monitor in real time. We share profits.</span>
                 </div>
               </div>
 
-              {/* Value proposition badges */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="p-2.5 rounded-xl bg-[#0b122e] border border-slate-800 flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 font-bold text-xs">
-                    $
+              {/* Value proposition badges - Fits perfectly in 1 horizontal line without scroll on mobile */}
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-3 py-1">
+                <div className="p-1.5 sm:p-3 rounded-lg sm:rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 sm:gap-3 min-w-0">
+                  <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                    <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600" />
                   </div>
-                  <div className="text-left">
-                    <div className="text-[11px] font-bold text-white">No Upfront</div>
-                    <div className="text-[10px] text-slate-400">Fees to PropSol</div>
-                  </div>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-[#0b122e] border border-slate-800 flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 font-bold text-xs">
-                    👁️
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[11px] font-bold text-white">Read-Only</div>
-                    <div className="text-[10px] text-slate-400">Access for You</div>
+                  <div className="text-left min-w-0 overflow-hidden">
+                    <div className="text-[9px] xs:text-[10px] sm:text-[11px] font-extrabold text-slate-900 leading-tight truncate">No Upfront</div>
+                    <div className="text-[8px] xs:text-[9px] sm:text-[10px] font-semibold text-slate-500 leading-tight truncate">Fees to PropSol</div>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#0b122e] border border-slate-800 flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 font-bold text-xs">
-                    $
+                <div className="p-1.5 sm:p-3 rounded-lg sm:rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 sm:gap-3 min-w-0">
+                  <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                    <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
                   </div>
-                  <div className="text-left">
-                    <div className="text-[11px] font-bold text-white">We Only Earn</div>
-                    <div className="text-[10px] text-slate-400">When You Earn</div>
+                  <div className="text-left min-w-0 overflow-hidden">
+                    <div className="text-[9px] xs:text-[10px] sm:text-[11px] font-extrabold text-slate-900 leading-tight truncate">Read-Only</div>
+                    <div className="text-[8px] xs:text-[9px] sm:text-[10px] font-semibold text-slate-500 leading-tight truncate">Access for You</div>
+                  </div>
+                </div>
+
+                <div className="p-1.5 sm:p-3 rounded-lg sm:rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 sm:gap-3 min-w-0">
+                  <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                    <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600" />
+                  </div>
+                  <div className="text-left min-w-0 overflow-hidden">
+                    <div className="text-[9px] xs:text-[10px] sm:text-[11px] font-extrabold text-slate-900 leading-tight truncate">We Only Earn</div>
+                    <div className="text-[8px] xs:text-[9px] sm:text-[10px] font-semibold text-slate-500 leading-tight truncate">When You Earn</div>
                   </div>
                 </div>
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4 pt-1">
                 <button
                   onClick={() => openModal('challenge')}
-                  className="w-full sm:w-auto px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2.5 group text-sm"
+                  className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2.5 group text-sm"
                 >
                   <span>Start Partnership</span>
                   <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white">
@@ -161,45 +231,45 @@ export default function PartnershipPage() {
 
                 <a
                   href="#how-it-works"
-                  className="w-full sm:w-auto px-7 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold rounded-xl transition-all text-center text-sm flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-bold rounded-xl transition-all text-center text-sm flex items-center justify-center gap-2 shadow-sm"
                 >
-                  <Play className="w-4 h-4 fill-white" />
+                  <Play className="w-4 h-4 fill-slate-900 text-slate-900" />
                   <span>How It Works</span>
                 </a>
               </div>
 
               {/* Sub features bullet line */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-slate-300 pt-2 font-medium">
+              <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-1.5 sm:gap-y-2 text-[10px] sm:text-[11px] text-slate-800 pt-0.5 font-bold">
                 <div className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-blue-400" />
+                  <Check className="w-3.5 h-3.5 text-blue-600 stroke-[3]" />
                   <span>Approved Prop Firms</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-blue-400" />
+                  <Check className="w-3.5 h-3.5 text-blue-600 stroke-[3]" />
                   <span>Transparent Profit Sharing</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-blue-400" />
+                  <Check className="w-3.5 h-3.5 text-blue-600 stroke-[3]" />
                   <span>Read-Only Investor Access</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-blue-400" />
+                  <Check className="w-3.5 h-3.5 text-blue-600 stroke-[3]" />
                   <span>Performance-Based</span>
                 </div>
               </div>
 
             </div>
 
-            {/* Right Display Image Visual */}
-            <div className="lg:col-span-6 relative">
-              <div className="relative mx-auto max-w-lg lg:max-w-none">
+            {/* Right Display Image Visual - Directly Overlaid on Hero Section */}
+            <div className="lg:col-span-6 relative flex items-center justify-center pt-1 lg:pt-0">
+              <div className="relative w-[105%] -mx-[2.5%] sm:w-full sm:mx-0 max-w-lg lg:max-w-xl flex justify-center lg:justify-end lg:translate-x-6 xl:translate-x-10">
                 <Image 
-                  src="/assets/hero_laptop_money.png"
+                  src="/assets/money_laptop.png"
                   alt="PropSol Trading Laptop, Cash Stacks and Smartphone Dashboard"
-                  width={700}
-                  height={550}
+                  width={1050}
+                  height={820}
                   priority
-                  className="w-full h-auto object-contain drop-shadow-2xl rounded-2xl"
+                  className="w-full h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.55)] relative z-10 scale-105 sm:scale-100 lg:scale-115 xl:scale-125 transform transition-transform origin-center lg:origin-right"
                 />
               </div>
             </div>
@@ -207,6 +277,7 @@ export default function PartnershipPage() {
           </div>
         </div>
       </section>
+
 
 
       {/* ================= OUR PARTNERSHIP MODEL (LIGHT SECTION) ================= */}
