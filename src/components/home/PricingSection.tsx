@@ -114,13 +114,13 @@ function Card({ plan }) {
   const benefitIconColor = isPopular ? "text-slate-300" : "text-[#4B3DB7]";
   const badgeStyle = isPopular ? "bg-white text-[#2D2460]" : "bg-[#4B3DB7] text-white";
 
-  let href = "/signup";
+  let href = "/checkout?model=pass";
   if (plan.slug.includes("step-1")) {
-    href = "/signup?type=step1";
+    href = "/checkout?model=pass&accountType=2-step&scope=step-1";
   } else if (plan.slug.includes("2-step-full")) {
-    href = "/signup?type=full";
+    href = "/checkout?model=pass&accountType=2-step&scope=full";
   } else if (plan.slug.includes("1-step")) {
-    href = "/signup?type=1step";
+    href = "/checkout?model=pass&accountType=1-step&scope=full";
   }
 
   let buttonText = "Select Plan";

@@ -13,7 +13,10 @@ import Loading, { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { userService, User } from "@/services/user.service";
 import { propFirmService, PropFirmRegistration } from "@/services/prop-firm.service";
 
-type Tab = "all" | "history" | "notifications" | "referrals";
+import { PartnershipAccountsView } from "@/components/dashboard/PartnershipAccountsView";
+import StartPartnershipModal from "@/components/partnership/StartPartnershipModal";
+
+type Tab = "all" | "partnership" | "history" | "notifications" | "referrals";
 
 function DashboardContent() {
     const searchParams = useSearchParams();
@@ -21,10 +24,11 @@ function DashboardContent() {
     const [user, setUser] = useState<User | undefined>(undefined);
     const [accounts, setAccounts] = useState<PropFirmRegistration[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isPartnershipModalOpen, setIsPartnershipModalOpen] = useState(false);
 
     useEffect(() => {
         const tabParam = searchParams.get("tab");
-        if (tabParam && ["all", "history", "notifications", "referrals"].includes(tabParam)) {
+        if (tabParam && ["all", "partnership", "history", "notifications", "referrals"].includes(tabParam)) {
             setActiveTab(tabParam as Tab);
         }
     }, [searchParams]);
@@ -78,20 +82,33 @@ function DashboardContent() {
 
                 <div className="container mx-auto px-4 py-8">
                     {/* Tab Navigation */}
-                    <div className="mb-8 flex flex-wrap justify-center gap-4">
+                    <div className="mb-8 flex flex-wrap justify-center gap-3">
                         <button
                             onClick={() => setActiveTab("all")}
-                            className={`rounded-lg px-6 py-2 text-sm font-medium transition-colors ${activeTab === "all"
-                                ? "bg-blue-600 text-white"
+                            className={`rounded-lg px-5 py-2.5 text-sm font-medium transition-colors ${activeTab === "all"
+                                ? "bg-blue-600 text-white shadow-sm"
                                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                 }`}
                         >
-                            All Account
+                            All Accounts
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("partnership")}
+                            className={`rounded-lg px-5 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === "partnership"
+                                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+                                : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                                }`}
+                        >
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                            </span>
+                            Partnership Accounts
                         </button>
                         <button
                             onClick={() => setActiveTab("history")}
-                            className={`rounded-lg px-6 py-2 text-sm font-medium transition-colors ${activeTab === "history"
-                                ? "bg-blue-600 text-white"
+                            className={`rounded-lg px-5 py-2.5 text-sm font-medium transition-colors ${activeTab === "history"
+                                ? "bg-blue-600 text-white shadow-sm"
                                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                 }`}
                         >
@@ -99,8 +116,8 @@ function DashboardContent() {
                         </button>
                         <button
                             onClick={() => setActiveTab("notifications")}
-                            className={`rounded-lg px-6 py-2 text-sm font-medium transition-colors ${activeTab === "notifications"
-                                ? "bg-blue-600 text-white"
+                            className={`rounded-lg px-5 py-2.5 text-sm font-medium transition-colors ${activeTab === "notifications"
+                                ? "bg-blue-600 text-white shadow-sm"
                                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                 }`}
                         >
@@ -108,8 +125,8 @@ function DashboardContent() {
                         </button>
                         <button
                             onClick={() => setActiveTab("referrals")}
-                            className={`rounded-lg px-6 py-2 text-sm font-medium transition-colors ${activeTab === "referrals"
-                                ? "bg-blue-600 text-white"
+                            className={`rounded-lg px-5 py-2.5 text-sm font-medium transition-colors ${activeTab === "referrals"
+                                ? "bg-blue-600 text-white shadow-sm"
                                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                 }`}
                         >
@@ -120,6 +137,12 @@ function DashboardContent() {
                     {/* Tab Content */}
                     <div className="min-h-[400px]">
                         {activeTab === "all" && <AccountList accounts={accounts} />}
+                        {activeTab === "partnership" && (
+                            <PartnershipAccountsView 
+                                accounts={accounts} 
+                                onStartNewPartnership={() => setIsPartnershipModalOpen(true)} 
+                            />
+                        )}
                         {activeTab === "history" && <HistoryView />}
                         {activeTab === "notifications" && <NotificationsView />}
                         {activeTab === "referrals" && <ReferralsView />}
@@ -127,6 +150,11 @@ function DashboardContent() {
                 </div>
             </main>
             <Footer />
+
+            <StartPartnershipModal
+                isOpen={isPartnershipModalOpen}
+                onClose={() => setIsPartnershipModalOpen(false)}
+            />
         </div>
     );
 }

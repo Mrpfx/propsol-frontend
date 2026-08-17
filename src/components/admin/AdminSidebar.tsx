@@ -9,6 +9,7 @@ import {
     Users,
     Share2,
     Briefcase,
+    Handshake,
     CreditCard,
     ArrowUpRight,
     MessageCircle,
@@ -79,6 +80,12 @@ export function AdminSidebar({ isOpen = false, onClose = () => {} }: AdminSideba
             title: "Prop Firms",
             icon: Briefcase,
             href: "/admin/prop-firm",
+            role: "prop_firms"
+        },
+        {
+            title: "Partnership Accounts",
+            icon: Handshake,
+            href: "/admin/partnership",
             role: "prop_firms"
         },
         {
