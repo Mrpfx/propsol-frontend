@@ -16,7 +16,7 @@ export default function PassPage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <Header onOpenPartnershipModal={() => setIsModalOpen(true)} />
+      <Header />
       <Hero onOpenPartnershipModal={() => setIsModalOpen(true)} />
       <Features />
       <Process />
@@ -27,7 +27,6 @@ export default function PassPage() {
       <StartPartnershipModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        defaultAccountType="challenge"
       />
     </main>
   );

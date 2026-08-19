@@ -50,61 +50,61 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             
             {/* CARD 1: PROPSOL PASS */}
-            <div className="p-8 rounded-3xl bg-[#0a122e]/90 border-2 border-blue-600/60 hover:border-blue-500 transition-all duration-300 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
-              <div className="space-y-6">
+            <div className="p-5 sm:p-8 rounded-3xl bg-[#0a122e]/90 border-2 border-blue-600/60 hover:border-blue-500 transition-all duration-300 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
+              <div className="space-y-4 sm:space-y-6">
                 
                 {/* Header Icon & Badge */}
-                <div className="flex items-start justify-between">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
-                    <ShieldCheck className="w-8 h-8" />
+                <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30 shrink-0">
+                    <ShieldCheck className="w-6 h-6 sm:w-8 sm:h-8" />
                   </div>
-                  <div className="px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold flex items-center gap-1.5">
+                  <div className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 shrink-0">
                     <span>We Pass. You Trade.</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </div>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-black text-white mb-2">PropSol Pass</h2>
+                  <h2 className="text-xl sm:text-2xl font-black text-white mb-1.5 sm:mb-2">PropSol Pass</h2>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     We pass your challenge account for a basic fee, then hand over the <span className="text-blue-400 font-bold">LIVE</span> account with the complete trading system so you can manage it yourself.
                   </p>
                 </div>
 
                 {/* Checkpoints */}
-                <div className="space-y-3 text-xs text-slate-200">
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5" />
+                <div className="space-y-2.5 sm:space-y-3 text-xs text-slate-200">
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </div>
                     <span>We pass your challenge account for a basic fee</span>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5" />
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </div>
                     <span>You receive the <strong className="text-white">LIVE</strong> funded account</span>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5" />
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </div>
                     <span>Full trading system & guidelines included</span>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5" />
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </div>
                     <span>You manage the account and keep 100% of the profits</span>
                   </div>
                 </div>
 
                 {/* Guarantee callout box */}
-                <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-500/30 flex items-start gap-3 text-xs text-blue-200">
-                  <Shield className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-blue-950/40 border border-blue-500/30 flex items-start gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-blue-200">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold text-white">If we fail to pass the account:</span><br/>
                     All fees are fully refunded + $100 compensation for your time.
@@ -114,10 +114,10 @@ export default function Home() {
               </div>
 
               {/* Action Button */}
-              <div className="pt-6">
+              <div className="pt-4 sm:pt-6">
                 <Link
                   href="/pass"
-                  className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 group text-sm"
+                  className="w-full py-3.5 sm:py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl sm:rounded-2xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 group text-xs sm:text-sm"
                 >
                   <span>Choose PropSol Pass</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -127,53 +127,53 @@ export default function Home() {
             </div>
 
             {/* CARD 2: PROPSOL PARTNERSHIP */}
-            <div className="p-8 rounded-3xl bg-[#0a122e]/90 border-2 border-emerald-600/60 hover:border-emerald-500 transition-all duration-300 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
-              <div className="space-y-6">
+            <div className="p-5 sm:p-8 rounded-3xl bg-[#0a122e]/90 border-2 border-emerald-600/60 hover:border-emerald-500 transition-all duration-300 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
+              <div className="space-y-4 sm:space-y-6">
                 
                 {/* Header Icon & Badge */}
-                <div className="flex items-start justify-between">
-                  <div className="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30">
-                    <Handshake className="w-8 h-8" />
+                <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30 shrink-0">
+                    <Handshake className="w-6 h-6 sm:w-8 sm:h-8" />
                   </div>
-                  <div className="px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-1.5">
+                  <div className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 shrink-0">
                     <span>We Trade. We Grow Together.</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </div>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-black text-white mb-2">PropSol Partnership</h2>
+                  <h2 className="text-xl sm:text-2xl font-black text-white mb-1.5 sm:mb-2">PropSol Partnership</h2>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     We pass your challenge and manage it for you. You earn consistent profits without the stress.
                   </p>
                 </div>
 
                 {/* Checkpoints */}
-                <div className="space-y-3 text-xs text-slate-200">
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5" />
+                <div className="space-y-2.5 sm:space-y-3 text-xs text-slate-200">
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </div>
                     <span>You bring your challenge account, we pass it for <strong className="text-emerald-400">FREE</strong> to become a live account and manage it</span>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5" />
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </div>
                     <span>You bring your instant funded account, we manage it for <strong className="text-emerald-400">FREE</strong> and split profit</span>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5" />
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </div>
                     <span>You earn consistent profit without the stress</span>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5" />
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </div>
                     <span>Zero upfront cost – we take the risk, you share the reward</span>
                   </div>
@@ -182,10 +182,10 @@ export default function Home() {
               </div>
 
               {/* Action Button */}
-              <div className="pt-6">
+              <div className="pt-4 sm:pt-6">
                 <Link
                   href="/partnership"
-                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 group text-sm"
+                  className="w-full py-3.5 sm:py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl sm:rounded-2xl transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 group text-xs sm:text-sm"
                 >
                   <span>Choose PropSol Partnership</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

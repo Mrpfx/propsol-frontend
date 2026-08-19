@@ -32,7 +32,7 @@ const PROP_FIRMS = [
     badgeColor: 'text-amber-500', 
     accent: 'from-amber-500/20 to-orange-500/20',
     svgLogo: (
-      <div className="flex items-center gap-1.5 font-black tracking-wider text-white text-base">
+      <div className="flex items-center gap-1 font-black tracking-wider text-white text-xs sm:text-base">
         <span>TEN</span>
         <span className="text-amber-500">TRADE</span>
       </div>
@@ -43,11 +43,11 @@ const PROP_FIRMS = [
     name: 'Funding Pips', 
     badgeColor: 'text-blue-400',
     svgLogo: (
-      <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center font-bold text-slate-900 text-sm">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-white flex items-center justify-center font-bold text-slate-900 text-xs sm:text-sm">
           iP
         </div>
-        <span className="font-bold text-white text-sm">Funding Pips</span>
+        <span className="font-bold text-white text-xs sm:text-sm">Funding Pips</span>
       </div>
     )
   },
@@ -56,11 +56,11 @@ const PROP_FIRMS = [
     name: 'FundedNext', 
     badgeColor: 'text-purple-400',
     svgLogo: (
-      <div className="flex items-center gap-2">
-        <div className="flex items-center text-purple-400 font-bold text-lg">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center text-purple-400 font-bold text-sm sm:text-lg">
           ⇄
         </div>
-        <span className="font-bold text-white text-sm">FundedNext</span>
+        <span className="font-bold text-white text-xs sm:text-sm">FundedNext</span>
       </div>
     )
   },
@@ -69,9 +69,9 @@ const PROP_FIRMS = [
     name: 'FTMO', 
     badgeColor: 'text-blue-500',
     svgLogo: (
-      <div className="flex items-center gap-2">
-        <div className="w-5 h-5 border-2 border-blue-400 rotate-45 flex items-center justify-center" />
-        <span className="font-bold text-white text-base tracking-widest">FTMO</span>
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="w-3.5 h-3.5 sm:w-5 sm:h-5 border-2 border-blue-400 rotate-45 flex items-center justify-center" />
+        <span className="font-bold text-white text-xs sm:text-base tracking-wider sm:tracking-widest">FTMO</span>
       </div>
     )
   }
@@ -85,11 +85,11 @@ const ACCOUNT_SIZES = [
   { size: 500000, label: '$500,000', fee: 1999 }
 ];
 
-export default function StartPartnershipModal({ isOpen, onClose, defaultAccountType = 'challenge' }: StartPartnershipModalProps) {
+export default function StartPartnershipModal({ isOpen, onClose, defaultAccountType }: StartPartnershipModalProps) {
   const router = useRouter();
   
-  // State for progressive vertical step flow
-  const [accountType, setAccountType] = useState<'challenge' | 'instant' | null>(defaultAccountType);
+  // State for progressive vertical step flow - defaults to null so user must select
+  const [accountType, setAccountType] = useState<'challenge' | 'instant' | null>(defaultAccountType || null);
   const [propFirm, setPropFirm] = useState<string | null>(null);
   const [accountSize, setAccountSize] = useState<number | null>(null);
   const [accountSizes, setAccountSizes] = useState(ACCOUNT_SIZES);
@@ -97,26 +97,28 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
   // Reset selections & fetch live pricing when modal opens
   React.useEffect(() => {
     if (isOpen) {
-      setAccountType(defaultAccountType || 'challenge');
+      setAccountType(defaultAccountType || null);
       setPropFirm(null);
       setAccountSize(null);
 
-      // Fetch dynamic pricing
-      import('@/services/partnership.service').then(({ partnershipService }) => {
-        partnershipService.getPartnershipPlans().then((plans) => {
-          if (plans && plans.length > 0) {
-            const currentPlan = plans.find(p => p.account_type === (defaultAccountType || 'challenge')) || plans[0];
-            if (currentPlan && currentPlan.prices && currentPlan.prices.length > 0) {
-              const formattedPrices = currentPlan.prices.map(p => ({
-                size: p.account_size,
-                label: p.account_size_display || `$${p.account_size.toLocaleString()}`,
-                fee: p.price
-              }));
-              setAccountSizes(formattedPrices);
+      // Fetch dynamic pricing if type is provided
+      if (defaultAccountType) {
+        import('@/services/partnership.service').then(({ partnershipService }) => {
+          partnershipService.getPartnershipPlans().then((plans) => {
+            if (plans && plans.length > 0) {
+              const currentPlan = plans.find(p => p.account_type === defaultAccountType) || plans[0];
+              if (currentPlan && currentPlan.prices && currentPlan.prices.length > 0) {
+                const formattedPrices = currentPlan.prices.map(p => ({
+                  size: p.account_size,
+                  label: p.account_size_display || `$${p.account_size.toLocaleString()}`,
+                  fee: p.price
+                }));
+                setAccountSizes(formattedPrices);
+              }
             }
-          }
-        }).catch((err) => console.warn('Using default partnership pricing:', err));
-      });
+          }).catch((err) => console.warn('Using default partnership pricing:', err));
+        });
+      }
     }
   }, [isOpen, defaultAccountType]);
 
@@ -186,67 +188,71 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
       <div className="relative w-full max-w-3xl bg-[#090e23] border border-slate-800/80 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col text-white">
         
         {/* Header */}
-        <div className="sticky top-0 z-20 bg-[#090e23]/95 backdrop-blur-md px-6 py-5 border-b border-slate-800/60 flex items-center justify-between">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner">
-              <Handshake className="w-6 h-6" />
+        <div className="sticky top-0 z-20 bg-[#090e23]/95 backdrop-blur-md px-4 py-3.5 sm:px-6 sm:py-5 border-b border-slate-800/60 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 sm:gap-3.5">
+            <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner shrink-0">
+              <Handshake className="w-4 h-4 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white tracking-tight">Start Partnership</h2>
-              <p className="text-xs text-slate-400">Step-by-step selection for your partnership account setup.</p>
+              <h2 className="text-base sm:text-xl font-bold text-white tracking-tight">Start Partnership</h2>
+              <p className="text-[10px] sm:text-xs text-slate-400">Step-by-step selection for your partnership account setup.</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
         {/* Scrollable Body - Progressive Vertical Flow */}
-        <div className="p-6 overflow-y-auto space-y-8 custom-scrollbar">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-8 custom-scrollbar">
           
           {/* STEP 1: ACCOUNT TYPE */}
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                 <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">1</span>
                 <span>ACCOUNT TYPE</span>
               </div>
-              {accountType && (
+              {accountType ? (
                 <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Selected
+                </span>
+              ) : (
+                <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                  Select type to continue
                 </span>
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
               {/* Challenge Account Card */}
               <button
                 type="button"
                 onClick={() => handleAccountTypeSelect('challenge')}
-                className={`relative text-left p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${
+                className={`relative text-left p-3 sm:p-5 rounded-xl sm:rounded-2xl border transition-all duration-300 flex flex-col justify-between ${
                   accountType === 'challenge'
-                    ? 'bg-blue-950/40 border-blue-500 shadow-lg shadow-blue-600/10'
+                    ? 'bg-blue-950/40 border-blue-500 shadow-lg shadow-blue-600/10 ring-2 ring-blue-500/20'
                     : 'bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60'
                 }`}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                    <Trophy className="w-5 h-5" />
+                <div className="flex items-start justify-between mb-2 sm:mb-4">
+                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                    <Trophy className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                   </div>
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                  <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                     accountType === 'challenge' ? 'border-blue-500 bg-blue-500' : 'border-slate-600'
                   }`}>
-                    {accountType === 'challenge' && <div className="w-2 h-2 rounded-full bg-white" />}
+                    {accountType === 'challenge' && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white" />}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-base text-white mb-1">Challenge Account</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    We pass the challenge and deliver a live funded account.
+                  <h3 className="font-bold text-xs sm:text-base text-white mb-0.5 sm:mb-1">Challenge Account</h3>
+                  <p className="text-[10px] sm:text-xs text-slate-400 leading-snug sm:leading-relaxed">
+                    We pass the challenge & deliver live funded account.
                   </p>
                 </div>
               </button>
@@ -255,27 +261,27 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
               <button
                 type="button"
                 onClick={() => handleAccountTypeSelect('instant')}
-                className={`relative text-left p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${
+                className={`relative text-left p-3 sm:p-5 rounded-xl sm:rounded-2xl border transition-all duration-300 flex flex-col justify-between ${
                   accountType === 'instant'
-                    ? 'bg-blue-950/40 border-blue-500 shadow-lg shadow-blue-600/10'
+                    ? 'bg-blue-950/40 border-blue-500 shadow-lg shadow-blue-600/10 ring-2 ring-blue-500/20'
                     : 'bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60'
                 }`}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                    <ShieldCheck className="w-5 h-5" />
+                <div className="flex items-start justify-between mb-2 sm:mb-4">
+                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                    <ShieldCheck className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                   </div>
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                  <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                     accountType === 'instant' ? 'border-blue-500 bg-blue-500' : 'border-slate-600'
                   }`}>
-                    {accountType === 'instant' && <div className="w-2 h-2 rounded-full bg-white" />}
+                    {accountType === 'instant' && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white" />}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-base text-white mb-1">Instant Funded Account</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Already funded. We start trading immediately and share profits.
+                  <h3 className="font-bold text-xs sm:text-base text-white mb-0.5 sm:mb-1">Instant Funded</h3>
+                  <p className="text-[10px] sm:text-xs text-slate-400 leading-snug sm:leading-relaxed">
+                    Already funded. Start trading & sharing profit immediately.
                   </p>
                 </div>
               </button>
@@ -284,7 +290,7 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
 
           {/* STEP 2: SELECT PROP FIRM (Unfolds vertically when account type is active) */}
           {accountType && (
-            <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-6">
+            <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                   <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">2</span>
@@ -295,13 +301,13 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
                     <CheckCircle2 className="w-3.5 h-3.5" /> {selectedFirmObj?.name}
                   </span>
                 ) : (
-                  <span className="text-[11px] text-amber-400 font-medium animate-pulse">
+                  <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
                     Select a prop firm to continue
                   </span>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-1 sm:gap-3">
                 {PROP_FIRMS.map((firm) => {
                   const isSelected = propFirm === firm.id;
                   return (
@@ -309,21 +315,21 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
                       key={firm.id}
                       type="button"
                       onClick={() => handlePropFirmSelect(firm.id)}
-                      className={`relative p-4 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-2 min-h-[90px] ${
+                      className={`relative px-1 py-1.5 sm:p-3.5 rounded-xl sm:rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-0.5 sm:gap-2 min-h-[48px] sm:min-h-[85px] ${
                         isSelected
                           ? 'bg-blue-950/40 border-blue-500 shadow-md shadow-blue-500/10 ring-2 ring-blue-500/20'
                           : 'bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60'
                       }`}
                     >
-                      <div className="absolute top-2.5 right-2.5">
-                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                      <div className="absolute top-1.5 right-1.5 sm:top-2.5 sm:right-2.5">
+                        <div className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border flex items-center justify-center ${
                           isSelected ? 'border-blue-500 bg-blue-500' : 'border-slate-600'
                         }`}>
                           {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
 
-                      <div className="my-auto">
+                      <div className="my-auto py-1">
                         {firm.svgLogo}
                       </div>
                     </button>
@@ -332,35 +338,35 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
               </div>
 
               {/* Info Box */}
-              <div className="p-3.5 rounded-xl bg-blue-950/30 border border-blue-500/20 flex items-center gap-3 text-xs text-blue-200/90">
-                <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
-                  <Info className="w-3.5 h-3.5" />
+              <div className="p-2.5 sm:p-3.5 rounded-xl bg-blue-950/30 border border-blue-500/20 flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-blue-200/90">
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                  <Info className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </div>
-                <span>We work with top rated prop firms to give you the best opportunities. You can switch firms anytime you want.</span>
+                <span>We work with top rated prop firms to give you the best opportunities. You can switch firms anytime.</span>
               </div>
             </div>
           )}
 
           {/* STEP 3: SELECT ACCOUNT SIZE (Unfolds vertically once prop firm is selected) */}
           {accountType && propFirm && (
-            <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-6">
+            <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                  <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">3</span>
+                <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold">3</span>
                   <span>SELECT ACCOUNT SIZE</span>
                 </div>
                 {accountSize ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> {selectedSizeObj?.label}
+                  <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 sm:px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                    <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> {selectedSizeObj?.label}
                   </span>
                 ) : (
-                  <span className="text-[11px] text-amber-400 font-medium animate-pulse">
-                    Select account size to see pricing
+                  <span className="text-[9px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                    Select account size
                   </span>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
                 {accountSizes.map((item) => {
                   const isSelected = accountSize === item.size;
 
@@ -369,25 +375,25 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
                       key={item.size}
                       type="button"
                       onClick={() => handleAccountSizeSelect(item.size)}
-                      className={`relative p-3.5 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center ${
+                      className={`relative p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border transition-all duration-300 flex flex-col items-center text-center ${
                         isSelected
                           ? 'bg-blue-950/50 border-blue-500 shadow-md shadow-blue-500/10 ring-2 ring-blue-500/20'
                           : 'bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60'
                       }`}
                     >
-                      <div className="absolute top-2 right-2">
-                        <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                      <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
+                        <div className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full border flex items-center justify-center ${
                           isSelected ? 'border-blue-500 bg-blue-500' : 'border-slate-600'
                         }`}>
-                          {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          {isSelected && <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-white" />}
                         </div>
                       </div>
 
-                      <div className="text-base font-extrabold text-white mt-1 mb-1">{item.label}</div>
-                      <div className="text-[10px] text-slate-400 leading-tight">
+                      <div className="text-xs sm:text-base font-extrabold text-white mt-0.5 sm:mt-1 mb-0.5 sm:mb-1">{item.label}</div>
+                      <div className="text-[9px] sm:text-[10px] text-slate-400 leading-tight">
                         8% Profit Target<br/>10% Max Drawdown
                       </div>
-                      <div className="mt-3 text-sm font-bold text-blue-400">
+                      <div className="mt-1.5 sm:mt-3 text-xs sm:text-sm font-bold text-blue-400">
                         ${item.fee}
                       </div>
                     </button>
@@ -396,9 +402,9 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
               </div>
 
               {/* Recommendation Callout */}
-              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-3 text-xs text-amber-200/90">
-                <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
-                  <Star className="w-3.5 h-3.5 fill-amber-400" />
+              <div className="p-2.5 sm:p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-2.5 sm:gap-3 text-[10px] sm:text-xs text-amber-200/90">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                  <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400" />
                 </div>
                 <div>
                   <span className="font-bold text-amber-400">Most traders choose $50,000</span> – Best balance between risk and reward. Larger account sizes mean higher profit potential.
@@ -409,93 +415,93 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
 
           {/* STEP 4 & 5: SUMMARY & NEXT STEP (Unfolds vertically once size is selected) */}
           {accountType && propFirm && accountSize && (
-            <div className="space-y-6 animate-slideDown border-t border-slate-800/60 pt-6">
+            <div className="space-y-4 sm:space-y-6 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
               
               {/* STEP 4: SUMMARY */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                  <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">4</span>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold">4</span>
                   <span>PARTNERSHIP SUMMARY</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#0f1738]/80 border border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                      <Trophy className="w-4 h-4" />
+                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#0f1738]/80 border border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                      <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
-                    <div>
-                      <div className="text-[11px] text-slate-400">Account Type</div>
-                      <div className="text-xs font-bold text-white capitalize">{accountType} Account</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                      <Building2 className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-slate-400">Prop Firm</div>
-                      <div className="text-xs font-bold text-white">{selectedFirmObj?.name || propFirm}</div>
+                    <div className="min-w-0">
+                      <div className="text-[9px] sm:text-[11px] text-slate-400">Type</div>
+                      <div className="text-[11px] sm:text-xs font-bold text-white capitalize truncate">{accountType}</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                      <Wallet className="w-4 h-4" />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                      <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
-                    <div>
-                      <div className="text-[11px] text-slate-400">Account Size</div>
-                      <div className="text-xs font-bold text-white">${accountSize.toLocaleString()}</div>
+                    <div className="min-w-0">
+                      <div className="text-[9px] sm:text-[11px] text-slate-400">Prop Firm</div>
+                      <div className="text-[11px] sm:text-xs font-bold text-white truncate">{selectedFirmObj?.name || propFirm}</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                      <DollarSign className="w-4 h-4" />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                      <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </div>
-                    <div>
-                      <div className="text-[11px] text-slate-400">Total Fee</div>
-                      <div className="text-xs font-bold text-blue-400">${totalFee}</div>
+                    <div className="min-w-0">
+                      <div className="text-[9px] sm:text-[11px] text-slate-400">Size</div>
+                      <div className="text-[11px] sm:text-xs font-bold text-white truncate">${accountSize.toLocaleString()}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                      <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[9px] sm:text-[11px] text-slate-400">Total Fee</div>
+                      <div className="text-[11px] sm:text-xs font-bold text-blue-400 truncate">${totalFee}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* STEP 5: NEXT STEP */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                  <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">5</span>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold">5</span>
                   <span>NEXT STEP & CONFIRMATION</span>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-blue-950/30 border border-blue-500/20 flex items-center gap-3 text-xs text-blue-200/90">
-                  <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
-                    <Info className="w-3.5 h-3.5" />
+                <div className="p-2.5 sm:p-3.5 rounded-xl bg-blue-950/30 border border-blue-500/20 flex items-center gap-2.5 sm:gap-3 text-[10px] sm:text-xs text-blue-200/90">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                    <Info className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </div>
                   <span>After your payment is confirmed, we will purchase the account and share the investor login details with you within 24 hours.</span>
                 </div>
               </div>
 
               {/* Bottom Total & Continue Bar */}
-              <div className="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="pt-3 sm:pt-4 border-t border-slate-800/80 flex flex-row items-center justify-between gap-3 sm:gap-4">
                 <div>
-                  <div className="text-xs text-slate-400">Total Amount</div>
-                  <div className="text-3xl font-extrabold text-blue-400">${totalFee}.00</div>
+                  <div className="text-[10px] sm:text-xs text-slate-400">Total Amount</div>
+                  <div className="text-xl sm:text-3xl font-extrabold text-blue-400">${totalFee}.00</div>
                 </div>
 
-                <div className="flex flex-col items-center sm:items-end gap-1.5 w-full sm:w-auto">
+                <div className="flex flex-col items-end gap-1 shrink-0">
                   <button
                     type="button"
                     onClick={handleContinueToPayment}
-                    className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-2xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 group"
+                    className="px-5 sm:px-8 py-2.5 sm:py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm rounded-xl sm:rounded-2xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-1.5 sm:gap-2 group"
                   >
                     <span>Continue to Payment</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                   </button>
 
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-                    <Lock className="w-3 h-3 text-slate-500" />
-                    <span>Secure payment • 100% safe & encrypted</span>
+                  <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-slate-400">
+                    <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-500" />
+                    <span>Secure payment • 100% safe</span>
                   </div>
                 </div>
               </div>

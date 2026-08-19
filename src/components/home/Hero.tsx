@@ -36,8 +36,8 @@ export default function Hero() {
       </div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 sm:pt-20 md:pt-32 lg:mt-40">
         <div className="w-full lg:max-w-[80%] mb-4 text-center lg:text-left">
-          <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-4xl font-bold text-white mb-2 tracking-tight lg:whitespace-nowrap">We Pass Your Prop Firm Challenge -</h1>
-          <p className="text-xl sm:text-3xl md:text-4xl lg:text-[2.8rem] text-[#fbbf24] font-light mb-4 leading-tight lg:whitespace-nowrap">Or You Get a Full Refund + $100 Compensation</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 tracking-tight">We Pass Your Prop Firm Challenge -</h1>
+          <p className="text-lg sm:text-2xl lg:text-[2.6rem] text-[#fbbf24] font-light mb-4 leading-tight">Or You Get a Full Refund + $100 Compensation</p>
         </div>
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-0">
           <div className="w-full lg:w-[45%] z-30 text-center lg:text-left pt-8">

@@ -34,10 +34,10 @@ import StartPartnershipModal from "@/components/partnership/StartPartnershipModa
 
 export default function PartnershipPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [defaultAccountType, setDefaultAccountType] = useState<'challenge' | 'instant'>('challenge');
+  const [defaultAccountType, setDefaultAccountType] = useState<'challenge' | 'instant' | null>(null);
 
-  const openModal = (type: 'challenge' | 'instant' = 'challenge') => {
-    setDefaultAccountType(type);
+  const openModal = (type?: 'challenge' | 'instant') => {
+    setDefaultAccountType(type || null);
     setIsModalOpen(true);
   };
 
@@ -45,7 +45,7 @@ export default function PartnershipPage() {
     <main className="min-h-screen bg-[#070c1e] text-slate-900 selection:bg-blue-600 selection:text-white font-sans">
       
       {/* Navigation Header */}
-      <Header onOpenPartnershipModal={() => openModal('challenge')} />
+      <Header onOpenPartnershipModal={() => openModal()} />
 
       {/* ================= HERO SECTION (LIGHT-TO-DEEP ROYAL BLUE GRADIENT) ================= */}
       <section className="relative pt-24 pb-8 sm:pt-28 md:pt-36 sm:pb-20 md:pb-24 bg-gradient-to-b lg:bg-gradient-to-r from-white via-[#f0f6ff] via-[35%] lg:via-[45%] to-[#06164a] text-slate-900 overflow-hidden border-b border-slate-200/80">
@@ -155,7 +155,7 @@ export default function PartnershipPage() {
             {/* Left Content */}
             <div className="lg:col-span-6 space-y-3.5 lg:space-y-6 text-left">
               <div>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 leading-[1.15] tracking-tight">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-950 leading-[1.15] tracking-tight">
                   We Pass Your Challenge.<br/>
                   We Do the Trading.<br/>
                   <span className="text-blue-600">We Share the Profits.</span>
@@ -221,7 +221,7 @@ export default function PartnershipPage() {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4 pt-1">
                 <button
-                  onClick={() => openModal('challenge')}
+                  onClick={() => openModal()}
                   className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2.5 group text-sm"
                 >
                   <span>Start Partnership</span>

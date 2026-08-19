@@ -45,6 +45,8 @@ export default function Header({ onOpenPartnershipModal }: HeaderProps) {
     { name: "Support", href: "/support" }
   ];
 
+  const showBookNow = pathname !== "/" && pathname !== "/partnership";
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b transition-colors duration-300 ${isDarkBg ? "bg-[#070b19]/90 border-slate-800/80" : "bg-white/90 border-slate-200/50"}`}>
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
@@ -84,7 +86,7 @@ export default function Header({ onOpenPartnershipModal }: HeaderProps) {
           </nav>
         </div>
 
-        {/* Action Buttons Right */}
+        {/* Action Buttons Right (Desktop) */}
         <div className="hidden md:flex items-center gap-3">
           {onOpenPartnershipModal && (
             <button
@@ -96,14 +98,16 @@ export default function Header({ onOpenPartnershipModal }: HeaderProps) {
             </button>
           )}
 
-          <a
-            href={calendlyLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 text-xs font-bold rounded-xl transition-all bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 border-none shadow-md shadow-amber-500/20"
-          >
-            Book Call
-          </a>
+          {showBookNow && (
+            <a
+              href={calendlyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 text-xs font-bold rounded-xl transition-all bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 border-none shadow-md shadow-amber-500/20 whitespace-nowrap"
+            >
+              Book Now
+            </a>
+          )}
 
           <Link
             href="/signin"
@@ -124,7 +128,7 @@ export default function Header({ onOpenPartnershipModal }: HeaderProps) {
           </Link>
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile action bar & menu button */}
         <div className="lg:hidden flex items-center gap-2">
           {onOpenPartnershipModal && (
             <button
@@ -134,6 +138,16 @@ export default function Header({ onOpenPartnershipModal }: HeaderProps) {
               <Handshake className="w-3.5 h-3.5" />
               <span>Start</span>
             </button>
+          )}
+          {showBookNow && (
+            <a
+              href={calendlyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 text-[11px] font-bold rounded-lg bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 shadow-md shadow-amber-500/20 whitespace-nowrap"
+            >
+              Book Now
+            </a>
           )}
           <button
             className={`p-2 transition-colors ${isDarkBg ? "text-slate-200 hover:text-white" : "text-slate-600 hover:text-blue-600"}`}
@@ -173,6 +187,18 @@ export default function Header({ onOpenPartnershipModal }: HeaderProps) {
             ))}
 
             <div className="flex flex-col gap-3 w-full px-8 mt-4">
+              {showBookNow && (
+                <a
+                  href={calendlyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3 text-center text-sm font-bold text-slate-950 bg-[#fbbf24] hover:bg-[#f59e0b] rounded-xl transition-all shadow-md shadow-amber-500/20"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Book Now
+                </a>
+              )}
+
               {onOpenPartnershipModal && (
                 <button
                   onClick={() => {
