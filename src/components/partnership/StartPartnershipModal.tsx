@@ -92,21 +92,61 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
   const [accountType, setAccountType] = useState<'challenge' | 'instant' | null>(defaultAccountType);
   const [propFirm, setPropFirm] = useState<string | null>(null);
   const [accountSize, setAccountSize] = useState<number | null>(null);
+  const [accountSizes, setAccountSizes] = useState(ACCOUNT_SIZES);
 
-  // Reset selections when modal opens or defaultAccountType changes
+  // Reset selections & fetch live pricing when modal opens
   React.useEffect(() => {
     if (isOpen) {
       setAccountType(defaultAccountType || 'challenge');
       setPropFirm(null);
       setAccountSize(null);
+
+      // Fetch dynamic pricing
+      import('@/services/partnership.service').then(({ partnershipService }) => {
+        partnershipService.getPartnershipPlans().then((plans) => {
+          if (plans && plans.length > 0) {
+            const currentPlan = plans.find(p => p.account_type === (defaultAccountType || 'challenge')) || plans[0];
+            if (currentPlan && currentPlan.prices && currentPlan.prices.length > 0) {
+              const formattedPrices = currentPlan.prices.map(p => ({
+                size: p.account_size,
+                label: p.account_size_display || `$${p.account_size.toLocaleString()}`,
+                fee: p.price
+              }));
+              setAccountSizes(formattedPrices);
+            }
+          }
+        }).catch((err) => console.warn('Using default partnership pricing:', err));
+      });
     }
   }, [isOpen, defaultAccountType]);
+
+  // Update accountSizes when accountType changes
+  React.useEffect(() => {
+    if (accountType) {
+      import('@/services/partnership.service').then(({ partnershipService }) => {
+        partnershipService.getPartnershipPlans().then((plans) => {
+          if (plans && plans.length > 0) {
+            const currentPlan = plans.find(p => p.account_type === accountType) || plans[0];
+            if (currentPlan && currentPlan.prices && currentPlan.prices.length > 0) {
+              const formattedPrices = currentPlan.prices.map(p => ({
+                size: p.account_size,
+                label: p.account_size_display || `$${p.account_size.toLocaleString()}`,
+                fee: p.price
+              }));
+              setAccountSizes(formattedPrices);
+            }
+          }
+        }).catch((err) => console.warn('Using default partnership pricing:', err));
+      });
+    }
+  }, [accountType]);
 
   if (!isOpen) return null;
 
   const selectedFirmObj = PROP_FIRMS.find(f => f.id === propFirm);
-  const selectedSizeObj = ACCOUNT_SIZES.find(s => s.size === accountSize);
+  const selectedSizeObj = accountSizes.find(s => s.size === accountSize);
   const totalFee = selectedSizeObj ? selectedSizeObj.fee : 0;
+
 
   const handleAccountTypeSelect = (type: 'challenge' | 'instant') => {
     setAccountType(type);
@@ -134,11 +174,10 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
       model: 'partnership',
       accountType: accountType,
       propFirm: propFirm,
-      accountSize: accountSize.toString(),
-      price: totalFee.toString()
+      accountSize: accountSize.toString()
     });
     onClose();
-    router.push(`/checkout?${params.toString()}`);
+    router.push(`/partnership/checkout?${params.toString()}`);
   };
 
   return (
@@ -322,8 +361,9 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                {ACCOUNT_SIZES.map((item) => {
+                {accountSizes.map((item) => {
                   const isSelected = accountSize === item.size;
+
                   return (
                     <button
                       key={item.size}

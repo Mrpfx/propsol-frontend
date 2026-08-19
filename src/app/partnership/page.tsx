@@ -48,16 +48,17 @@ export default function PartnershipPage() {
       <Header onOpenPartnershipModal={() => openModal('challenge')} />
 
       {/* ================= HERO SECTION (LIGHT-TO-DEEP ROYAL BLUE GRADIENT) ================= */}
-      <section className="relative pt-24 pb-8 sm:pt-28 md:pt-36 sm:pb-20 md:pb-24 bg-gradient-to-b lg:bg-gradient-to-r from-white via-white via-[70%] to-[#010a2b] text-slate-900 overflow-hidden border-b border-slate-200/80">
+      <section className="relative pt-24 pb-8 sm:pt-28 md:pt-36 sm:pb-20 md:pb-24 bg-gradient-to-b lg:bg-gradient-to-r from-white via-[#f0f6ff] via-[35%] lg:via-[45%] to-[#06164a] text-slate-900 overflow-hidden border-b border-slate-200/80">
         
-        {/* Rich Deep Royal Blue Backdrop Overlay - Positioned exclusively at bottom on mobile behind the image */}
-        <div className="absolute bottom-0 right-0 w-full lg:w-[60%] h-[35%] lg:h-full bg-gradient-to-t lg:bg-gradient-to-r from-[#010821] via-[#021c6e]/90 to-transparent pointer-events-none z-0" />
+        {/* Rich Deep Royal Blue Backdrop Overlay - Smoothly blends from transparent on left to deep navy on right */}
+        <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#06184c]/50 via-[50%] to-[#050d2c]/95 pointer-events-none z-0" />
 
         {/* Deep Glowing Bloom behind trading chart visual */}
-        <div className="absolute bottom-4 lg:top-1/2 right-0 lg:-translate-y-1/2 w-[450px] sm:w-[750px] h-[450px] sm:h-[750px] bg-gradient-to-tr from-cyan-500/25 via-blue-600/45 to-indigo-900/60 rounded-full blur-[100px] sm:blur-[150px] pointer-events-none z-0" />
+        <div className="absolute bottom-4 lg:top-1/2 right-0 lg:-translate-y-1/2 w-[450px] sm:w-[750px] h-[450px] sm:h-[750px] bg-gradient-to-tr from-cyan-500/20 via-blue-600/35 to-indigo-900/60 rounded-full blur-[100px] sm:blur-[150px] pointer-events-none z-0" />
 
         {/* Trading chart background visual & glowing neon signs on the right side */}
-        <div className="absolute top-0 right-0 w-full lg:w-3/5 h-full pointer-events-none overflow-hidden select-none z-0">
+        <div className="absolute top-0 right-0 w-full lg:w-3/5 h-full pointer-events-none overflow-hidden select-none z-0 [mask-image:linear-gradient(to_bottom,black_0%,black_100%)] lg:[mask-image:linear-gradient(to_right,transparent_0%,black_35%,black_100%)]">
+
           {/* Subtle Grid backdrop */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(56,189,248,0.18)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.18)_1px,transparent_1px)] bg-[size:2.5rem_2.5rem] [mask-image:radial-gradient(ellipse_70%_60%_at_75%_50%,#000_80%,transparent_100%)]" />
 

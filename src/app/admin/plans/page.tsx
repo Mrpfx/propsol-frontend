@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { planService, Plan, PlanPrice } from "@/services/plan.service";
+import { partnershipService, PartnershipPlan } from "@/services/partnership.service";
 import { toast } from "react-hot-toast";
 import { 
     CreditCard, 
@@ -12,18 +13,20 @@ import {
     Sparkles, 
     DollarSign, 
     Layers,
-    Loader2
+    Loader2,
+    Handshake
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface EditPlanModalProps {
-    plan: Plan;
+    plan: any;
+    isPartnership?: boolean;
     isOpen: boolean;
     onClose: () => void;
     onSave: () => void;
 }
 
-function EditPlanModal({ plan, isOpen, onClose, onSave }: EditPlanModalProps) {
+function EditPlanModal({ plan, isPartnership = false, isOpen, onClose, onSave }: EditPlanModalProps) {
     const [saving, setSaving] = useState(false);
     const [formData, setFormData] = useState<{
         name: string;
@@ -31,7 +34,7 @@ function EditPlanModal({ plan, isOpen, onClose, onSave }: EditPlanModalProps) {
         description: string;
         is_popular: boolean;
         highlight_text: string;
-        prices: PlanPrice[];
+        prices: any[];
     }>({
         name: "",
         subtitle: "",
@@ -49,12 +52,12 @@ function EditPlanModal({ plan, isOpen, onClose, onSave }: EditPlanModalProps) {
                 description: plan.description || "",
                 is_popular: !!plan.is_popular,
                 highlight_text: plan.highlight_text || "",
-                prices: (plan.prices || []).map((p) => ({ ...p }))
+                prices: (plan.prices || []).map((p: any) => ({ ...p }))
             });
         }
     }, [plan]);
 
-    const handlePriceChange = (index: number, field: keyof PlanPrice, value: any) => {
+    const handlePriceChange = (index: number, field: string, value: any) => {
         const updatedPrices = [...formData.prices];
         updatedPrices[index] = {
             ...updatedPrices[index],
@@ -69,8 +72,13 @@ function EditPlanModal({ plan, isOpen, onClose, onSave }: EditPlanModalProps) {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await planService.updatePlan(plan.id, formData);
-            toast.success("Plan updated successfully!");
+            if (isPartnership) {
+                await partnershipService.updatePartnershipPlan(plan.id, formData);
+                toast.success("Partnership plan updated successfully!");
+            } else {
+                await planService.updatePlan(plan.id, formData);
+                toast.success("Prop Pass plan updated successfully!");
+            }
             onSave();
             onClose();
         } catch (error) {
@@ -90,10 +98,12 @@ function EditPlanModal({ plan, isOpen, onClose, onSave }: EditPlanModalProps) {
                 <div className="px-6 py-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
-                            <CreditCard className="w-5 h-5" />
+                            {isPartnership ? <Handshake className="w-5 h-5" /> : <CreditCard className="w-5 h-5" />}
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold">Edit Plan: {plan.name}</h2>
+                            <h2 className="text-lg font-bold">
+                                Edit {isPartnership ? "Partnership Plan" : "Prop Pass Plan"}: {plan.name}
+                            </h2>
                             <p className="text-xs text-slate-400">Slug: {plan.slug}</p>
                         </div>
                     </div>
@@ -259,16 +269,22 @@ function EditPlanModal({ plan, isOpen, onClose, onSave }: EditPlanModalProps) {
 }
 
 export default function AdminPlansPage() {
-    const [plans, setPlans] = useState<Plan[]>([]);
+    const [activeTab, setActiveTab] = useState<"pass" | "partnership">("pass");
+    const [passPlans, setPassPlans] = useState<Plan[]>([]);
+    const [partnershipPlans, setPartnershipPlans] = useState<PartnershipPlan[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+    const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
 
     const fetchPlans = async () => {
         setLoading(true);
         try {
-            const data = await planService.getAllPlans();
-            setPlans(data);
+            const [pPlans, ptPlans] = await Promise.all([
+                planService.getAllPlans().catch(() => []),
+                partnershipService.getPartnershipPlans().catch(() => [])
+            ]);
+            setPassPlans(pPlans);
+            setPartnershipPlans(ptPlans);
         } catch (error) {
             console.error("Failed to fetch plans:", error);
             toast.error("Failed to fetch plans");
@@ -281,6 +297,8 @@ export default function AdminPlansPage() {
         fetchPlans();
     }, []);
 
+    const currentPlans = activeTab === "pass" ? passPlans : partnershipPlans;
+
     return (
         <div className="space-y-6">
             {/* Page Header */}
@@ -290,7 +308,7 @@ export default function AdminPlansPage() {
                         Manage Pricing Plans
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">
-                        Configure funding challenge plans, tiers, and pricing.
+                        Configure funding challenge plans, partnership models, tiers, and pricing.
                     </p>
                 </div>
                 <button
@@ -302,20 +320,49 @@ export default function AdminPlansPage() {
                 </button>
             </div>
 
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+                <button
+                    onClick={() => setActiveTab("pass")}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                        activeTab === "pass"
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                            : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                    }`}
+                >
+                    <CreditCard className="w-4 h-4" />
+                    <span>Prop Pass Plans ({passPlans.length})</span>
+                </button>
+
+                <button
+                    onClick={() => setActiveTab("partnership")}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                        activeTab === "partnership"
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                            : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                    }`}
+                >
+                    <Handshake className="w-4 h-4" />
+                    <span>Partnership Plans ({partnershipPlans.length})</span>
+                </button>
+            </div>
+
             {/* Plans Grid */}
             {loading ? (
                 <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
                     <LoadingSpinner size="md" message="Loading pricing plans..." />
                 </div>
-            ) : plans.length === 0 ? (
+            ) : currentPlans.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
                     <CreditCard className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <p className="text-slate-500 font-medium">No pricing plans found</p>
+                    <p className="text-slate-500 font-medium">
+                        No {activeTab === "pass" ? "Prop Pass" : "Partnership"} plans found
+                    </p>
                     <p className="text-slate-400 text-xs mt-1">Please ensure backend initial seeding has completed.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {plans.map((plan) => (
+                    {currentPlans.map((plan: any) => (
                         <div
                             key={plan.id}
                             className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col relative"
@@ -350,7 +397,7 @@ export default function AdminPlansPage() {
                                     <p className="text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-2">
                                         Pricing Tiers
                                     </p>
-                                    {(plan.prices || []).map((price, idx) => (
+                                    {(plan.prices || []).map((price: any, idx: number) => (
                                         <div
                                             key={idx}
                                             className="flex items-center justify-between text-xs py-1 border-b border-slate-100 last:border-0"
@@ -374,7 +421,7 @@ export default function AdminPlansPage() {
                                     className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-colors shadow-sm"
                                 >
                                     <Edit className="w-4 h-4" />
-                                    Edit Plan
+                                    Edit {activeTab === "partnership" ? "Partnership Plan" : "Plan"}
                                 </button>
                             </div>
 
@@ -394,6 +441,7 @@ export default function AdminPlansPage() {
             {selectedPlan && (
                 <EditPlanModal
                     plan={selectedPlan}
+                    isPartnership={activeTab === "partnership"}
                     isOpen={isEditOpen}
                     onClose={() => setIsEditOpen(false)}
                     onSave={fetchPlans}

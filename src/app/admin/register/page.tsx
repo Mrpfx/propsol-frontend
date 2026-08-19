@@ -14,6 +14,7 @@ export default function AdminRegisterPage() {
         name: "",
         email: "",
         password: "",
+        securityCode: "",
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -28,21 +29,29 @@ export default function AdminRegisterPage() {
         setLoading(true);
         setError("");
 
+        if (!formData.securityCode || formData.securityCode.trim().length !== 10) {
+            const codeErr = "Please enter the valid 10-character admin security code.";
+            setError(codeErr);
+            toast.error(codeErr);
+            setLoading(false);
+            return;
+        }
+
         try {
             await adminService.createAdmin({
                 name: formData.name,
                 email: formData.email,
                 password: formData.password,
+                security_code: formData.securityCode.trim(),
                 Status: true,
                 email_verified: true,
             });
             toast.success("Admin created successfully!");
-            setFormData({ name: "", email: "", password: "" });
-            // Optional: Redirect to login or dashboard
-            // router.push("/admin/login");
+            setFormData({ name: "", email: "", password: "", securityCode: "" });
+            router.push("/admin/admins");
         } catch (err: any) {
             console.error("Failed to create admin:", err);
-            const errorMessage = "Failed to create admin. Please try again.";
+            const errorMessage = err?.response?.data?.detail || "Failed to create admin. Please verify your security code and credentials.";
             setError(errorMessage);
             toast.error(errorMessage);
         } finally {
@@ -139,6 +148,24 @@ export default function AdminRegisterPage() {
                                 placeholder="************"
                                 required
                                 className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none transition-all text-slate-600 placeholder:text-gray-300"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="securityCode" className="block text-sm font-medium text-slate-700 mb-2 flex items-center justify-between">
+                                <span>Admin Security Code <span className="text-red-500">*</span></span>
+                                <span className="text-xs text-slate-400 font-normal">10 characters (Letters & Digits)</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="securityCode"
+                                name="securityCode"
+                                maxLength={10}
+                                value={formData.securityCode}
+                                onChange={handleChange}
+                                placeholder="e.g. P7x9K3m2Q1"
+                                required
+                                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none transition-all text-slate-600 font-mono uppercase placeholder:text-gray-300 tracking-wider"
                             />
                         </div>
 

@@ -16,6 +16,7 @@ export interface AdminCreate {
     email: string;
     name: string;
     password: string;
+    security_code: string;
     Status?: boolean;
     email_verified?: boolean;
 }
@@ -115,7 +116,12 @@ export const adminService = {
     },
 
     async getPayments(): Promise<any[]> {
-        const response = await api.get<any[]>('/payments');
+        const response = await api.get<any[]>('/admin/payments');
+        return response.data;
+    },
+
+    async diagnosePayment(data: { provider: string; identifier: string; force_sync?: boolean }): Promise<any> {
+        const response = await api.post<any>('/admin/payments/diagnose', data);
         return response.data;
     },
 

@@ -12,6 +12,7 @@ import Footer from "@/components/layout/Footer";
 import Loading, { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { userService, User } from "@/services/user.service";
 import { propFirmService, PropFirmRegistration } from "@/services/prop-firm.service";
+import { partnershipService } from "@/services/partnership.service";
 
 import { PartnershipAccountsView } from "@/components/dashboard/PartnershipAccountsView";
 import StartPartnershipModal from "@/components/partnership/StartPartnershipModal";
@@ -23,6 +24,7 @@ function DashboardContent() {
     const [activeTab, setActiveTab] = useState<Tab>("all");
     const [user, setUser] = useState<User | undefined>(undefined);
     const [accounts, setAccounts] = useState<PropFirmRegistration[]>([]);
+    const [partnershipAccounts, setPartnershipAccounts] = useState<PropFirmRegistration[]>([]);
     const [loading, setLoading] = useState(true);
     const [isPartnershipModalOpen, setIsPartnershipModalOpen] = useState(false);
 
@@ -53,15 +55,24 @@ function DashboardContent() {
                 console.error("Error fetching user data:", error);
             }
 
-            // Fetch Accounts Data
+            // Fetch Prop Pass Accounts Data
+            let passAccounts: PropFirmRegistration[] = [];
             try {
                 const registrations = await propFirmService.getUserRegistrations();
-                const filteredAccounts = registrations.filter((reg: any) =>
-                    reg.payment_status && ["completed", "successful", "finished", "confirmed"].includes(reg.payment_status)
+                passAccounts = registrations.filter((reg: any) =>
+                    reg.payment_status && ["completed", "successful", "finished", "confirmed", "pending"].includes(reg.payment_status)
                 );
-                setAccounts(filteredAccounts);
+                setAccounts(passAccounts);
             } catch (error) {
                 console.error("Error fetching accounts data:", error);
+            }
+
+            // Fetch Partnership Registrations Data from Backend Database
+            try {
+                const partnerRegs = await partnershipService.getUserPartnerships();
+                setPartnershipAccounts(partnerRegs);
+            } catch (error) {
+                console.error("Error fetching partnership accounts:", error);
             } finally {
                 setLoading(false);
             }
@@ -139,7 +150,7 @@ function DashboardContent() {
                         {activeTab === "all" && <AccountList accounts={accounts} />}
                         {activeTab === "partnership" && (
                             <PartnershipAccountsView 
-                                accounts={accounts} 
+                                accounts={partnershipAccounts.length > 0 ? partnershipAccounts : accounts} 
                                 onStartNewPartnership={() => setIsPartnershipModalOpen(true)} 
                             />
                         )}

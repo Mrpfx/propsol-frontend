@@ -417,6 +417,7 @@ function CheckoutContent() {
             setActiveStep(3);
             return;
         }
+
         if (!formData.loginId || !formData.password) {
             toast.error("Please enter your account login credentials");
             setActiveStep(6);
@@ -439,7 +440,7 @@ function CheckoutContent() {
 
         if (!localStorage.getItem("access_token")) {
             toast.error("Please login to complete your order");
-            router.push("/signin?returnUrl=/checkout");
+            router.push(`/signin?returnUrl=/checkout?${searchParams.toString()}`);
             setLoading(false);
             return;
         }
@@ -448,7 +449,6 @@ function CheckoutContent() {
             await userService.getCurrentUser();
             
             const formattedRules = `[Pass Challenge: ${formData.packageType}] ${formData.notes || "Standard Pass evaluation setup"}`;
-
             const regResult = await propFirmService.createRegistration({
                 login_id: formData.loginId,
                 password: formData.password,
@@ -467,18 +467,22 @@ function CheckoutContent() {
                 telegram_username: formData.telegram
             });
 
-            if (!regResult || !regResult.order_id) {
+            const regOrderId = regResult?.order_id || regResult?.id;
+
+            if (!regResult || !regOrderId) {
                 throw new Error("Registration failed to return an order ID.");
             }
 
-            setOrderId(regResult.order_id);
+            setOrderId(regOrderId);
 
             const origin = window.location.origin;
             const successUrl = `${origin}/dashboard`;
             const cancelUrl = `${origin}/checkout`;
+            const orderDescription = `PropSol Pass - ${formData.propFirm} ${formData.challengeType} - $${formData.accountSize}k`;
+
 
             if (formData.paymentMethod === "whop") {
-                const whopRes = await propFirmService.createWhopCheckoutLink(regResult.order_id);
+                const whopRes = await propFirmService.createWhopCheckoutLink(regOrderId);
                 if (whopRes.checkout_url) {
                     window.location.href = whopRes.checkout_url;
                 } else {
@@ -492,8 +496,8 @@ function CheckoutContent() {
                     price_amount: finalCost,
                     price_currency: "usd",
                     pay_currency: formData.cryptoCurrency,
-                    order_id: regResult.order_id,
-                    order_description: `PropSol Pass - ${formData.propFirm} ${formData.challengeType} - $${formData.accountSize}k`,
+                    order_id: regOrderId,
+                    order_description: orderDescription,
                     success_url: successUrl,
                     cancel_url: cancelUrl
                 });
@@ -508,12 +512,13 @@ function CheckoutContent() {
                     price_amount: finalCost,
                     price_currency: "usd",
                     pay_currency: formData.cryptoCurrency,
-                    order_id: regResult.order_id,
-                    order_description: `PropSol Pass - ${formData.propFirm} ${formData.challengeType} - $${formData.accountSize}k`
+                    order_id: regOrderId,
+                    order_description: orderDescription
                 });
 
                 setDirectPaymentDetails(paymentRes);
             }
+
         } catch (err) {
             console.error("Payment Error:", err);
             toast.error(err?.message || err?.response?.data?.message || "Failed to process order. Please try again.");
@@ -563,6 +568,8 @@ function CheckoutContent() {
                         Step-by-step vertical selection below. Click any step to edit or update your options.
                     </p>
                 </div>
+
+
 
                 {/* PROGRESSIVE VERTICAL STEP LIST / ACCORDION */}
                 <div className="space-y-4 pt-4">
@@ -997,7 +1004,6 @@ function CheckoutContent() {
                                             className="w-full bg-[#141B3D] border border-gray-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                                         />
                                     </div>
-
                                     <div>
                                         <label className="block text-xs font-semibold text-gray-300 mb-1">Trader Password *</label>
                                         <input
@@ -1033,7 +1039,9 @@ function CheckoutContent() {
                                             <option value="MatchTrader">MatchTrader</option>
                                         </select>
                                     </div>
+                                </div>
 
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs font-semibold text-gray-300 mb-1">WhatsApp Number</label>
                                         <input

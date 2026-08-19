@@ -43,6 +43,48 @@ export default function AdminManagementPage() {
     const [newPassword, setNewPassword] = useState("");
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+    // Add Admin Modal State
+    const [isAddAdminOpen, setIsAddAdminOpen] = useState(false);
+    const [newAdminData, setNewAdminData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        security_code: ""
+    });
+    const [creatingAdmin, setCreatingAdmin] = useState(false);
+
+    const handleCreateAdmin = async () => {
+        if (!newAdminData.name || !newAdminData.email || !newAdminData.password || !newAdminData.security_code) {
+            toast.error("Please fill in all fields including the 10-character security code.");
+            return;
+        }
+        if (newAdminData.security_code.trim().length !== 10) {
+            toast.error("Security code must be exactly 10 characters.");
+            return;
+        }
+
+        try {
+            setCreatingAdmin(true);
+            await adminService.createAdmin({
+                name: newAdminData.name,
+                email: newAdminData.email,
+                password: newAdminData.password,
+                security_code: newAdminData.security_code.trim(),
+                Status: true,
+                email_verified: true
+            });
+            toast.success("New admin created successfully!");
+            setIsAddAdminOpen(false);
+            setNewAdminData({ name: "", email: "", password: "", security_code: "" });
+            fetchAdmins();
+        } catch (error: any) {
+            const msg = error?.response?.data?.detail || "Failed to create admin. Verify your security code.";
+            toast.error(msg);
+        } finally {
+            setCreatingAdmin(false);
+        }
+    };
+
     const fetchAdmins = async () => {
         try {
             setLoading(true);
@@ -134,7 +176,7 @@ export default function AdminManagementPage() {
                     <p className="text-sm text-gray-500 mt-1">Manage system administrators, permissions, and roles.</p>
                 </div>
                 <button
-                    onClick={() => router.push("/admin/register")}
+                    onClick={() => setIsAddAdminOpen(true)}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                 >
                     <Plus className="w-4 h-4" />
@@ -325,6 +367,88 @@ export default function AdminManagementPage() {
                                 className="px-4 py-2 bg-red-600 text-sm text-white rounded-lg hover:bg-red-700 transition"
                             >
                                 Delete Admin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Admin Modal */}
+            {isAddAdminOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-gray-900">Add New Administrator</h3>
+                            <button onClick={() => setIsAddAdminOpen(false)} className="text-gray-500 hover:text-gray-700">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-500 mb-4">Create a new admin account. Providing the 10-character security code is required.</p>
+                        
+                        <div className="space-y-4 mb-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input
+                                    type="text"
+                                    value={newAdminData.name}
+                                    onChange={(e) => setNewAdminData(prev => ({ ...prev, name: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                    placeholder="Full Name"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={newAdminData.email}
+                                    onChange={(e) => setNewAdminData(prev => ({ ...prev, email: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                    placeholder="admin@propsol.com"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input
+                                    type="password"
+                                    value={newAdminData.password}
+                                    onChange={(e) => setNewAdminData(prev => ({ ...prev, password: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                    placeholder="••••••••••••"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center justify-between">
+                                    <span>Security Code <span className="text-red-500">*</span></span>
+                                    <span className="text-xs text-gray-400">10 characters</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    maxLength={10}
+                                    value={newAdminData.security_code}
+                                    onChange={(e) => setNewAdminData(prev => ({ ...prev, security_code: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-mono uppercase tracking-wider"
+                                    placeholder="P7x9K3m2Q1"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setIsAddAdminOpen(false)}
+                                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleCreateAdmin}
+                                disabled={creatingAdmin}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                            >
+                                {creatingAdmin && <Loader2 className="w-4 h-4 animate-spin" />}
+                                {creatingAdmin ? "Creating..." : "Create Admin"}
                             </button>
                         </div>
                     </div>
