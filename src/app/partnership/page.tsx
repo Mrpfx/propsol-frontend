@@ -51,10 +51,10 @@ export default function PartnershipPage() {
       <section className="relative pt-24 pb-8 sm:pt-28 md:pt-36 sm:pb-20 md:pb-24 bg-gradient-to-b lg:bg-gradient-to-r from-white via-[#ffffff] via-[65%] lg:via-[15%] to-[#06164a] text-slate-900 overflow-hidden border-b border-slate-200/80">
         
         {/* Rich Deep Royal Blue Backdrop Overlay - Smoothly blends from transparent on left to deep navy on right */}
-        <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#06184c]/10 via-[95%] to-[#050d2c]/10 pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#06184c]/10 via-[75%] to-[#050d2c]/10 pointer-events-none z-0" />
 
         {/* Deep Glowing Bloom behind trading chart visual */}
-        <div className="absolute bottom-4 lg:top-1/2 right-0 lg:-translate-y-1/2 w-[450px] sm:w-[750px] h-[450px] sm:h-[750px] bg-gradient-to-tr from-cyan-500/20 via-blue-600/35 to-indigo-900/60 rounded-full blur-[100px] sm:blur-[150px] pointer-events-none z-0" />
+        <div className="absolute bottom-4 lg:top-1/2 right-0 lg:-translate-y-1/2 w-[750px] sm:w-[950px] h-[400px] sm:h-[650px] bg-gradient-to-tr from-cyan-500/20 via-blue-600/35 to-indigo-900/60 rounded-full blur-[100px] sm:blur-[250px] pointer-events-none z-0" />
 
         {/* Trading chart background visual & glowing neon signs on the right side */}
         <div className="absolute top-0 right-0 w-full lg:w-3/5 h-full pointer-events-none overflow-hidden select-none z-0 [mask-image:linear-gradient(to_bottom,black_0%,black_100%)] lg:[mask-image:linear-gradient(to_right,transparent_0%,black_35%,black_100%)]">
@@ -63,12 +63,12 @@ export default function PartnershipPage() {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(192, 236, 255, 1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(192, 236, 255, 1)_1px,transparent_1px)] bg-[size:2.5rem_2.5rem] [mask-image:radial-gradient(ellipse_70%_60%_at_75%_50%,#000_80%,transparent_100%)]" />
 
           {/* Dynamic Trading Chart Line & Candlesticks SVG */}
-          <svg className="absolute top-0 right-0 w-full h-full opacity-70 mix-blend-screen" viewBox="0 0 1000 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg className="absolute top-0 right-0 w-full h-full opacity-70 mix-blend-screen" viewBox="0 0 1000 500" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="chartGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+              <linearGradient id="chartGradient" x1="10%" y1="100%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#023dc7ff" stopOpacity="0.05" />
                 <stop offset="50%" stopColor="#2a3acfff" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#456ac3ff" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#8aacfbff" stopOpacity="0.3" />
               </linearGradient>
               <linearGradient id="lineGlow" x1="0%" y1="100%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#2a3acfff" />
@@ -108,7 +108,7 @@ export default function PartnershipPage() {
 
             {/* Main Rising Trend Line */}
             <path
-              d="M 400 650 L 450 560 L 520 500 L 580 520 L 650 380 L 720 320 L 790 350 L 860 180 L 940 120 L 1000 80"
+              d="M 400 650 L 450 560 L 520 500 L 580 520 L 750 380 L 720 320 L 790 350 L 860 180 L 940 120 L 1000 80"
               stroke="url(#lineGlow)"
               strokeWidth="5"
               strokeLinecap="round"
@@ -262,10 +262,10 @@ export default function PartnershipPage() {
             </div>
 
             {/* Right Display Image Visual - Directly Overlaid on Hero Section */}
-            <div className="lg:col-span-6 relative flex items-center justify-center pt-1 lg:pt-0">
+            <div className="lg:col-span-6 relative flex items-center justify-center pt-1 lg:pt-0 sm:pt[-10px]">
               <div className="relative w-[105%] -mx-[2.5%] sm:w-full sm:mx-0 max-w-lg lg:max-w-xl flex justify-center lg:justify-end lg:translate-x-6 xl:translate-x-10">
                 <Image 
-                  src="/assets/money_laptop.png"
+                  src="/assets/money_laptop1.png"
                   alt="PropSol Trading Laptop, Cash Stacks and Smartphone Dashboard"
                   width={1050}
                   height={820}
