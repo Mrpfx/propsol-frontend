@@ -14,6 +14,7 @@ import {
 
 interface FeaturesProps {
   onOpenPartnershipModal?: () => void;
+  ctaHref?: string;
 }
 
 const failureReasons = [
@@ -55,7 +56,7 @@ const failureReasons = [
   }
 ];
 
-export default function Features({ onOpenPartnershipModal }: FeaturesProps) {
+export default function Features({ onOpenPartnershipModal, ctaHref }: FeaturesProps) {
   return (
     <section className="py-12 sm:py-20 bg-[#f8fafc]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
@@ -131,14 +132,24 @@ export default function Features({ onOpenPartnershipModal }: FeaturesProps) {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={onOpenPartnershipModal}
-              className="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 text-xs sm:text-sm whitespace-nowrap shrink-0 group"
-            >
-              <span>Get Started Today</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
+            {ctaHref ? (
+              <Link
+                href={ctaHref}
+                className="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 text-xs sm:text-sm whitespace-nowrap shrink-0 group"
+              >
+                <span>Get Started Today</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenPartnershipModal}
+                className="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 text-xs sm:text-sm whitespace-nowrap shrink-0 group"
+              >
+                <span>Get Started Today</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            )}
           </div>
 
         </div>

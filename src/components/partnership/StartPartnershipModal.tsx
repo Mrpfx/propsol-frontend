@@ -151,17 +151,14 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
   const selectedSizeObj = accountSizes.find(s => s.size === accountSize);
   const totalFee = selectedSizeObj ? selectedSizeObj.fee : 0;
 
-
   const handleAccountTypeSelect = (type: 'challenge' | 'instant') => {
     setAccountType(type);
-    // Reset subsequent choices if user changes account type
     setPropFirm(null);
     setAccountSize(null);
   };
 
   const handlePropFirmSelect = (firmId: string) => {
     setPropFirm(firmId);
-    // If account size was not set, reset or keep null
     if (!accountSize) {
       setAccountSize(null);
     }
@@ -290,7 +287,7 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
             </div>
           </div>
 
-          {/* STEP 2: SELECT PROP FIRM (Unfolds vertically when account type is active) */}
+          {/* STEP 2: SELECT PROP FIRM */}
           {accountType && (
             <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
               <div className="flex items-center justify-between">
@@ -349,7 +346,7 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
             </div>
           )}
 
-          {/* STEP 3: SELECT ACCOUNT SIZE (Unfolds vertically once prop firm is selected) */}
+          {/* STEP 3: SELECT ACCOUNT SIZE */}
           {accountType && propFirm && (
             <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
               <div className="flex items-center justify-between">
@@ -415,7 +412,7 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
             </div>
           )}
 
-          {/* STEP 4 & 5: SUMMARY & NEXT STEP (Unfolds vertically once size is selected) */}
+          {/* STEP 4 & 5: SUMMARY & NEXT STEP */}
           {accountType && propFirm && accountSize && (
             <div className="space-y-4 sm:space-y-6 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
               
@@ -423,7 +420,7 @@ export default function StartPartnershipModal({ isOpen, onClose, defaultAccountT
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase">
                   <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold">4</span>
-                  <span>PARTNERSHIP SUMMARY</span>
+                  <span>SELECTION SUMMARY</span>
                 </div>
 
                 <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#0f1738]/80 border border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">

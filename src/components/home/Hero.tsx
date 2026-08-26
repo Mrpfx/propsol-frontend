@@ -18,9 +18,10 @@ import {
 
 interface HeroProps {
   onOpenPartnershipModal?: () => void;
+  ctaHref?: string;
 }
 
-export default function Hero({ onOpenPartnershipModal }: HeroProps) {
+export default function Hero({ onOpenPartnershipModal, ctaHref }: HeroProps) {
   return (
     <section className="relative bg-white pt-10 sm:pt-14 pb-5 sm:pb-6 overflow-hidden border-b border-slate-100">
       
@@ -145,7 +146,7 @@ export default function Hero({ onOpenPartnershipModal }: HeroProps) {
               Accounts are managed in a manner fully compliant with prop firm rules, with limited monthly slots available.
             </p>
 
-            {/* Prop Firm Badges - SINGLE HORIZONTAL LINE ON ALL MOBILE SCREENS (NO SCROLLBAR) */}
+            {/* Prop Firm Badges - SINGLE HORIZONTAL LINE ON ALL MOBILE SCREENS */}
             <div className="flex items-center justify-center lg:justify-start gap-1.5 sm:gap-3 py-0.5">
               <div className="px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white border border-slate-200/90 shadow-sm flex items-center gap-1 text-[10px] sm:text-xs font-bold text-slate-800 shrink-0">
                 <span className="w-3.5 h-3.5 sm:w-5 sm:h-5 rounded bg-blue-600 text-white text-[8px] sm:text-[10px] font-black flex items-center justify-center">FN</span>
@@ -163,14 +164,24 @@ export default function Hero({ onOpenPartnershipModal }: HeroProps) {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
-              <button
-                type="button"
-                onClick={onOpenPartnershipModal}
-                className="w-full sm:w-auto px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2 text-xs sm:text-sm group"
-              >
-                <span>Get Started Now</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              {ctaHref ? (
+                <Link
+                  href={ctaHref}
+                  className="w-full sm:w-auto px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2 text-xs sm:text-sm group"
+                >
+                  <span>Get Started Now</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onOpenPartnershipModal}
+                  className="w-full sm:w-auto px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2 text-xs sm:text-sm group"
+                >
+                  <span>Get Started Now</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              )}
 
               <Link
                 href="/pricing"
@@ -203,7 +214,7 @@ export default function Hero({ onOpenPartnershipModal }: HeroProps) {
             <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl">
               
               <Image 
-                src="/assets/money_laptop1.png"
+                src="/assets/propsol_hero_laptop.png"
                 alt="PropSol Trading Laptop Dashboard with Money Stacks"
                 width={800}
                 height={650}
