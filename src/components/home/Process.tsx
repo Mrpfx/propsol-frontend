@@ -5,33 +5,48 @@ import React from 'react';
 import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
 
-const items = [
-  { title: "Guarantee Safety", description: "All accounts are managed strictly within prop firm rules." },
-  { title: "Fully Rule Compliant Trading", description: "Daily loss, max. drawdown, and consistency rules fully respected." },
-  { title: "Timely Completion", description: "Passes are completed within 30—60 trading days, minimizing risk." },
-  { title: "Zero-Risk Guarantee", description: "If we fail to pass your challenge:\nYou get a full refund of the service fee\nYour challenge fee is refunded\nYou receive $100 compensation for time wasted" }
+const guarantees = [
+  {
+    title: "Guarantee Safety",
+    description: "All accounts are managed strictly within prop firm rules."
+  },
+  {
+    title: "Fully Rule Compliant Trading",
+    description: "Daily loss, max. drawdown, and consistency rules fully respected."
+  },
+  {
+    title: "Timely Completion",
+    description: "Passes are completed within 30–60 trading days, minimizing risk."
+  },
+  {
+    title: "Zero-Risk Guarantee",
+    description: "If we fail to pass your challenge:\n• You get a full refund of the service fee\n• Your challenge fee is refunded\n• You receive $100 compensation for time wasted"
+  }
 ];
 
 export default function Process() {
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 overflow-hidden bg-[#e0eaf8]">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12">
-          <div className="flex-1 w-full lg:max-w-[45%]">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-6 sm:mb-8 text-center lg:text-left">
+    <section className="relative py-16 sm:py-24 overflow-hidden bg-[#edf4fc]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          
+          {/* Left Column: Guarantees */}
+          <div className="lg:col-span-6 space-y-8">
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight text-center lg:text-left">
               What PropSol Actually Does
             </h2>
-            <div className="space-y-4 sm:space-y-6">
-              {items.map((item, index) => (
-                <div className="flex items-start gap-2 sm:gap-3" key={index}>
-                  <div className="flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500 fill-blue-500" strokeWidth={0} />
+
+            <div className="space-y-6">
+              {guarantees.map((item, index) => (
+                <div className="flex items-start gap-3.5" key={index}>
+                  <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 mt-1 shadow-sm">
+                    <CheckCircle2 className="w-4 h-4 text-white" />
                   </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 mb-0.5 sm:mb-1">
+                  <div className="space-y-1">
+                    <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
                       {item.title}
                     </h3>
-                    <p className="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line">
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line font-medium">
                       {item.description}
                     </p>
                   </div>
@@ -39,16 +54,20 @@ export default function Process() {
               ))}
             </div>
           </div>
-          <div className="flex-1 w-full lg:max-w-[55%] order-first lg:order-last">
-            <div className="relative w-full aspect-[16/10] sm:aspect-[4/3] lg:aspect-[16/12]">
+
+          {/* Right Column: Workstation Graphic */}
+          <div className="lg:col-span-6 flex items-center justify-center">
+            <div className="relative w-full max-w-lg lg:max-w-xl">
               <Image
-                src="/assets/images/what-propsol-does.png"
-                alt="PropSol Trading Dashboard on Monitor and Phone"
-                fill
-                className="object-contain object-center lg:object-right-bottom"
+                src="/assets/monitor_phone_dashboard.png"
+                alt="PropSol Ultra-Wide Trading Workstation Desk Setup with Phone"
+                width={800}
+                height={550}
+                className="w-full h-auto object-contain rounded-2xl drop-shadow-xl hover:scale-[1.01] transition-transform duration-300"
               />
             </div>
           </div>
+
         </div>
       </div>
     </section>
