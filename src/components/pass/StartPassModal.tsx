@@ -247,38 +247,69 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
     const [customFirmInput, setCustomFirmInput] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(true);
 
+    const handleRedirectToAuth = (path: string) => {
+        onClose();
+        if (typeof window !== 'undefined') {
+            try {
+                sessionStorage.setItem("pending_pass_modal_data", JSON.stringify(formData));
+            } catch (e) {
+                console.error("Failed to save pass modal state", e);
+            }
+            const returnUrl = `${window.location.pathname}?openPassModal=true`;
+            router.push(`${path}?returnUrl=${encodeURIComponent(returnUrl)}`);
+        }
+    };
+
     // Initialize or reset state & check auth when modal opens
     useEffect(() => {
         if (isOpen) {
             const token = typeof window !== 'undefined' ? localStorage.getItem("access_token") : null;
             setIsLoggedIn(Boolean(token));
 
-            let initialChallengeType = "";
-            let initialScope = "";
-
-            if (initialPlan?.accountType) {
-                if (initialPlan.accountType.includes("1-step") || initialPlan.accountType.includes("1step")) {
-                    initialChallengeType = "1-Step Challenge";
-                } else if (initialPlan.accountType.includes("2-step") || initialPlan.accountType.includes("2step")) {
-                    initialChallengeType = "2-Step Challenge";
+            // Check if there is a saved pending modal state from before authentication
+            let savedStateData: any = null;
+            if (typeof window !== 'undefined') {
+                const rawSaved = sessionStorage.getItem("pending_pass_modal_data");
+                if (rawSaved) {
+                    try {
+                        savedStateData = JSON.parse(rawSaved);
+                        sessionStorage.removeItem("pending_pass_modal_data");
+                    } catch (e) {
+                        console.error("Failed to parse saved pass modal state:", e);
+                    }
                 }
             }
 
-            if (initialPlan?.scope) {
-                if (initialPlan.scope === "step-1" || initialPlan.scope === "Step 1 Only") {
-                    initialScope = "Step 1 Only";
-                } else if (initialPlan.scope === "full" || initialPlan.scope === "Full Pass") {
-                    initialScope = "Full Pass";
-                }
-            }
+            if (savedStateData && (savedStateData.propFirm || savedStateData.accountSize)) {
+                setFormData((prev) => ({ ...prev, ...savedStateData }));
+            } else {
+                let initialChallengeType = "";
+                let initialScope = "";
 
-            setFormData({
-                ...INITIAL_CHECKOUT_DATA,
-                propFirm: initialPlan?.propFirm || "",
-                challengeType: initialChallengeType,
-                scope: initialScope,
-                accountSize: initialPlan?.accountSize || 0
-            });
+                if (initialPlan?.accountType) {
+                    if (initialPlan.accountType.includes("1-step") || initialPlan.accountType.includes("1step")) {
+                        initialChallengeType = "1-Step Challenge";
+                    } else if (initialPlan.accountType.includes("2-step") || initialPlan.accountType.includes("2step")) {
+                        initialChallengeType = "2-Step Challenge";
+                    }
+                }
+
+                if (initialPlan?.scope) {
+                    if (initialPlan.scope === "step-1" || initialPlan.scope === "Step 1 Only") {
+                        initialScope = "Step 1 Only";
+                    } else if (initialPlan.scope === "full" || initialPlan.scope === "Full Pass") {
+                        initialScope = "Full Pass";
+                    }
+                }
+
+                setFormData({
+                    ...INITIAL_CHECKOUT_DATA,
+                    propFirm: initialPlan?.propFirm || "",
+                    challengeType: initialChallengeType,
+                    scope: initialScope,
+                    accountSize: initialPlan?.accountSize || 0
+                });
+            }
             setCreatedPayment(null);
             setIsCustomFirm(false);
             setCustomFirmInput("");
@@ -321,7 +352,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
     const isStep3Done = formData.accountSize > 0;
     const isStep4Done = Boolean(formData.packageType);
     const isStep5Done = formData.agreedTimeline && formData.agreedNoTrading;
-    const isStep6Done = Boolean(formData.loginId && formData.password);
+    const isStep6Done = Boolean(formData.loginId && formData.password && formData.serverName);
 
     const computedPrices = useMemo(() => {
         if (!formData.challengeType || formData.accountSize === 0) {
@@ -391,8 +422,8 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
             toast.error("Please confirm the timeline and rules agreement");
             return;
         }
-        if (!formData.loginId || !formData.password) {
-            toast.error("Please enter your account login credentials");
+        if (!formData.loginId || !formData.password || !formData.serverName) {
+            toast.error("Please enter your account login, password, and server name");
             return;
         }
         if (!formData.agreedToTerms || !formData.agreedToRefundPolicy) {
@@ -403,9 +434,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
         const isLoggedIn = typeof window !== 'undefined' && Boolean(localStorage.getItem("access_token"));
         if (!isLoggedIn) {
             toast.error("Please login to complete your order");
-            onClose();
-            const targetUrl = "/checkout";
-            router.push(`/signin?returnUrl=${encodeURIComponent(targetUrl)}`);
+            handleRedirectToAuth('/signin');
             return;
         }
 
@@ -531,24 +560,16 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                             <div className="flex flex-col sm:flex-row gap-2.5 w-full max-w-md pt-2">
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        onClose();
-                                        const returnUrl = typeof window !== 'undefined' ? `${window.location.pathname}?openPassModal=true` : '/pass?openPassModal=true';
-                                        router.push(`/signin?returnUrl=${encodeURIComponent(returnUrl)}`);
-                                    }}
-                                    className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 group"
+                                    onClick={() => handleRedirectToAuth('/signin')}
+                                    className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 group cursor-pointer"
                                 >
                                     <span>Sign In to Continue</span>
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        onClose();
-                                        const returnUrl = typeof window !== 'undefined' ? `${window.location.pathname}?openPassModal=true` : '/pass?openPassModal=true';
-                                        router.push(`/signup?returnUrl=${encodeURIComponent(returnUrl)}`);
-                                    }}
-                                    className="py-3 px-4 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs sm:text-sm transition-colors border border-slate-700"
+                                    onClick={() => handleRedirectToAuth('/signup')}
+                                    className="py-3 px-4 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs sm:text-sm transition-colors border border-slate-700 cursor-pointer"
                                 >
                                     Create Account
                                 </button>
@@ -900,7 +921,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] sm:text-xs font-semibold text-slate-300 mb-0.5 truncate">Server Name</label>
+                                            <label className="block text-[10px] sm:text-xs font-semibold text-slate-300 mb-0.5 truncate">Server Name *</label>
                                             <input
                                                 type="text"
                                                 value={formData.serverName}
