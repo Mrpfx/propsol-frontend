@@ -78,24 +78,23 @@ export function AccountEditModal({
         }
     };
 
-
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-lg rounded-2xl border border-slate-700/60 bg-[#0E1535] p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 text-white">
-                <div className="mb-6 flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 text-gray-900">
+                <div className="mb-5 flex items-center justify-between border-b border-gray-100 pb-3">
                     <div>
-                        <h2 className="text-xl font-bold text-white">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                             Edit Account Credentials
                         </h2>
-                        <p className="text-xs text-slate-400 mt-0.5">
+                        <p className="text-xs text-gray-500 mt-0.5">
                             Update your login ID, password, server, or contact details
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="rounded-full bg-slate-800 p-2 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+                        className="rounded-full bg-gray-100 p-2 text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors cursor-pointer"
                     >
                         <X className="h-5 w-5" />
                     </button>
@@ -104,7 +103,7 @@ export function AccountEditModal({
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label htmlFor="login_id" className="text-xs font-semibold text-slate-300">
+                            <label htmlFor="login_id" className="text-xs font-semibold text-gray-700">
                                 Login ID / Account #
                             </label>
                             <input
@@ -114,12 +113,12 @@ export function AccountEditModal({
                                 value={formData.login_id}
                                 onChange={handleChange}
                                 placeholder="e.g. 8839201"
-                                className="flex h-10 w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                                className="flex h-10 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                             />
                         </div>
 
                         <div className="space-y-1.5">
-                            <label htmlFor="password" className="text-xs font-semibold text-slate-300">
+                            <label htmlFor="password" className="text-xs font-semibold text-gray-700">
                                 Account Password
                             </label>
                             <input
@@ -129,14 +128,14 @@ export function AccountEditModal({
                                 value={formData.password}
                                 onChange={handleChange}
                                 placeholder="Trading Password"
-                                className="flex h-10 w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                                className="flex h-10 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label htmlFor="server_name" className="text-xs font-semibold text-slate-300">
+                            <label htmlFor="server_name" className="text-xs font-semibold text-gray-700">
                                 Server Name
                             </label>
                             <input
@@ -146,12 +145,12 @@ export function AccountEditModal({
                                 value={formData.server_name}
                                 onChange={handleChange}
                                 placeholder="e.g. FTMO-Server"
-                                className="flex h-10 w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="flex h-10 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
 
                         <div className="space-y-1.5">
-                            <label htmlFor="trading_platform" className="text-xs font-semibold text-slate-300">
+                            <label htmlFor="trading_platform" className="text-xs font-semibold text-gray-700">
                                 Platform
                             </label>
                             <input
@@ -161,14 +160,14 @@ export function AccountEditModal({
                                 value={formData.trading_platform}
                                 onChange={handleChange}
                                 placeholder="e.g. MT5 / MT4 / cTrader"
-                                className="flex h-10 w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="flex h-10 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <label htmlFor="whatsapp_no" className="text-xs font-semibold text-slate-300">
+                            <label htmlFor="whatsapp_no" className="text-xs font-semibold text-gray-700">
                                 WhatsApp Number
                             </label>
                             <input
@@ -178,12 +177,12 @@ export function AccountEditModal({
                                 value={formData.whatsapp_no}
                                 onChange={handleChange}
                                 placeholder="+1234567890"
-                                className="flex h-10 w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="flex h-10 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
 
                         <div className="space-y-1.5">
-                            <label htmlFor="telegram_username" className="text-xs font-semibold text-slate-300">
+                            <label htmlFor="telegram_username" className="text-xs font-semibold text-gray-700">
                                 Telegram Username
                             </label>
                             <input
@@ -193,23 +192,23 @@ export function AccountEditModal({
                                 value={formData.telegram_username}
                                 onChange={handleChange}
                                 placeholder="@username"
-                                className="flex h-10 w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="flex h-10 w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+                            className="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="inline-flex items-center justify-center rounded-xl border border-transparent bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/30 hover:from-blue-500 hover:to-indigo-500 transition-all disabled:opacity-50"
+                            className="inline-flex items-center justify-center rounded-xl border border-transparent bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-all disabled:opacity-50 cursor-pointer"
                         >
                             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Save Changes
@@ -220,4 +219,3 @@ export function AccountEditModal({
         </div>
     );
 }
-
