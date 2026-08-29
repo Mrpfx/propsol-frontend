@@ -33,17 +33,28 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        const status = error.response?.status;
+        const detail = error.response?.data?.detail;
+        const isAuthError =
+            status === 401 ||
+            (status === 403 && (detail === "Could not validate credentials" || detail === "Invalid token type for this endpoint"));
+
+        if (isAuthError) {
             if (typeof window !== 'undefined') {
                 if (window.location.pathname.startsWith('/admin')) {
                     localStorage.removeItem('admin_access_token');
                     localStorage.removeItem('admin_data');
                     localStorage.removeItem('is_admin');
-                    window.location.href = '/admin/login';
+                    if (!window.location.pathname.startsWith('/admin/login')) {
+                        window.location.href = '/admin/login';
+                    }
                 } else {
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('user_data');
-                    window.location.href = '/signin';
+                    const currentPath = window.location.pathname + window.location.search;
+                    if (!window.location.pathname.startsWith('/signin') && !window.location.pathname.startsWith('/signup')) {
+                        window.location.href = `/signin?returnUrl=${encodeURIComponent(currentPath)}`;
+                    }
                 }
             }
         }
