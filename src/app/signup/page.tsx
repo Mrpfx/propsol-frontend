@@ -1,15 +1,18 @@
 // @ts-nocheck
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { authService } from "@/services/auth.service";
 
-export default function SignUpPage() {
+function SignUpForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const returnUrl = searchParams.get("returnUrl") || "/dashboard";
+
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -37,17 +40,17 @@ export default function SignUpPage() {
                 referred_by: formData.referralCode || undefined,
             });
 
-            // If registration returns a token, redirect to dashboard
+            // If registration returns a token, redirect to dashboard or returnUrl
             if (response && response.access_token) {
                 toast.success("Signup successful! Redirecting...");
                 setTimeout(() => {
-                    router.push("/dashboard");
+                    router.push(returnUrl);
                 }, 1500);
             } else {
-                // Otherwise redirect to login
+                // Otherwise redirect to login with returnUrl preserved
                 toast.success("Signup successful! Please sign in.");
                 setTimeout(() => {
-                    router.push("/signin");
+                    router.push(`/signin?returnUrl=${encodeURIComponent(returnUrl)}`);
                 }, 1500);
             }
         } catch (err: any) {
@@ -201,5 +204,13 @@ export default function SignUpPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function SignUpPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+            <SignUpForm />
+        </Suspense>
     );
 }

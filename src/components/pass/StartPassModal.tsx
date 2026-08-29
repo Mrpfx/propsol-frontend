@@ -17,7 +17,8 @@ import {
     Lock,
     Trophy,
     Sparkles,
-    AlertCircle
+    AlertCircle,
+    ArrowRight
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { api } from "@/lib/api";
@@ -244,10 +245,14 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
     const [createdPayment, setCreatedPayment] = useState(null);
     const [isCustomFirm, setIsCustomFirm] = useState(false);
     const [customFirmInput, setCustomFirmInput] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-    // Initialize or reset state when modal opens
+    // Initialize or reset state & check auth when modal opens
     useEffect(() => {
         if (isOpen) {
+            const token = typeof window !== 'undefined' ? localStorage.getItem("access_token") : null;
+            setIsLoggedIn(Boolean(token));
+
             let initialChallengeType = "";
             let initialScope = "";
 
@@ -493,7 +498,63 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                 {/* Modal Body */}
                 <div className="p-3 sm:p-6 overflow-y-auto custom-scrollbar space-y-3.5 sm:space-y-6">
-                    {createdPayment ? (
+                    {!isLoggedIn ? (
+                        <div className="py-6 px-3 sm:py-10 sm:px-6 text-center space-y-5 flex flex-col items-center justify-center my-auto animate-fadeIn">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-xl">
+                                <Lock className="w-7 h-7 sm:w-8 sm:h-8" />
+                            </div>
+
+                            <div className="space-y-1.5 max-w-md">
+                                <h3 className="text-lg sm:text-2xl font-black text-white tracking-tight">
+                                    Sign In Required to Continue
+                                </h3>
+                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                    Please sign in or create an account to start your Prop Pass Evaluation checkout. Your evaluation progress will be safely linked to your dashboard profile.
+                                </p>
+                            </div>
+
+                            <div className="bg-[#111836] border border-slate-800/80 rounded-xl p-3.5 text-left space-y-2.5 max-w-md w-full text-xs text-slate-300 shadow-inner">
+                                <div className="flex items-center gap-2.5">
+                                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                                    <span>Link evaluation accounts directly to your dashboard</span>
+                                </div>
+                                <div className="flex items-center gap-2.5">
+                                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                                    <span>Real-time pass progress tracking & notifications</span>
+                                </div>
+                                <div className="flex items-center gap-2.5">
+                                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                                    <span>Pass guarantee protection tied to your profile</span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-2.5 w-full max-w-md pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        onClose();
+                                        const returnUrl = typeof window !== 'undefined' ? `${window.location.pathname}?openPassModal=true` : '/pass?openPassModal=true';
+                                        router.push(`/signin?returnUrl=${encodeURIComponent(returnUrl)}`);
+                                    }}
+                                    className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 group"
+                                >
+                                    <span>Sign In to Continue</span>
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        onClose();
+                                        const returnUrl = typeof window !== 'undefined' ? `${window.location.pathname}?openPassModal=true` : '/pass?openPassModal=true';
+                                        router.push(`/signup?returnUrl=${encodeURIComponent(returnUrl)}`);
+                                    }}
+                                    className="py-3 px-4 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-xs sm:text-sm transition-colors border border-slate-700"
+                                >
+                                    Create Account
+                                </button>
+                            </div>
+                        </div>
+                    ) : createdPayment ? (
                         <DirectPaymentView payment={createdPayment} onComplete={() => { onClose(); router.push("/dashboard"); }} />
                     ) : (
                         <div className="space-y-3.5 sm:space-y-6">

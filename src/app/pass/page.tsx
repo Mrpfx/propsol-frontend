@@ -1,7 +1,8 @@
 // @ts-nocheck
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
@@ -11,9 +12,16 @@ import VideoSection from "@/components/home/VideoSection";
 import PricingSection from "@/components/home/PricingSection";
 import StartPassModal from "@/components/pass/StartPassModal";
 
-export default function PassPage() {
+function PassContent() {
+  const searchParams = useSearchParams();
   const [isPassModalOpen, setIsPassModalOpen] = useState(false);
   const [passModalParams, setPassModalParams] = useState(null);
+
+  useEffect(() => {
+    if (searchParams.get('openPassModal') === 'true' || searchParams.get('openModal') === 'true') {
+      setIsPassModalOpen(true);
+    }
+  }, [searchParams]);
 
   const handleOpenPassModal = (params?: any) => {
     setPassModalParams(params || null);
@@ -35,5 +43,13 @@ export default function PassPage() {
         initialPlan={passModalParams}
       />
     </main>
+  );
+}
+
+export default function PassPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <PassContent />
+    </Suspense>
   );
 }
