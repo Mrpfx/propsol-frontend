@@ -3,6 +3,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 import { Check, ThumbsUp } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -103,7 +105,8 @@ const fallbackPlans = [
   }
 ];
 
-function Card({ plan }) {
+function Card({ plan, onOpenPassModal }) {
+  const router = useRouter();
   const isPopular = plan.is_popular;
   const bgColor = isPopular ? "bg-[#2D2460]" : "bg-[#E0D4FC]";
   const borderColor = isPopular ? "border border-[#4B3DB7]" : "border-none";
@@ -115,12 +118,16 @@ function Card({ plan }) {
   const badgeStyle = isPopular ? "bg-white text-[#2D2460]" : "bg-[#4B3DB7] text-white";
 
   let href = "/checkout?model=pass";
+  let planParams = { model: "pass" };
   if (plan.slug.includes("step-1")) {
     href = "/checkout?model=pass&accountType=2-step&scope=step-1";
+    planParams = { model: "pass", accountType: "2-step", scope: "step-1" };
   } else if (plan.slug.includes("2-step-full")) {
     href = "/checkout?model=pass&accountType=2-step&scope=full";
+    planParams = { model: "pass", accountType: "2-step", scope: "full" };
   } else if (plan.slug.includes("1-step")) {
     href = "/checkout?model=pass&accountType=1-step&scope=full";
+    planParams = { model: "pass", accountType: "1-step", scope: "full" };
   }
 
   let buttonText = "Select Plan";
@@ -131,6 +138,21 @@ function Card({ plan }) {
   } else if (plan.slug.includes("1-step")) {
     buttonText = "Select 1-Step Completion";
   }
+
+  const handleSelectPlan = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onOpenPassModal) {
+      onOpenPassModal(planParams);
+      return;
+    }
+    const isLoggedIn = typeof window !== 'undefined' && Boolean(localStorage.getItem('access_token'));
+    if (isLoggedIn) {
+      router.push(href);
+    } else {
+      toast.error('Please sign in to proceed with PropPass checkout.');
+      router.push(`/signin?returnUrl=${encodeURIComponent(href)}`);
+    }
+  };
 
   return (
     <div className={`relative flex flex-col rounded-lg overflow-hidden transition-all h-full ${bgColor} ${borderColor}`}>
@@ -174,19 +196,24 @@ function Card({ plan }) {
           </div>
         </div>
         <div className="mt-auto">
-          <Link
-            href={href}
-            className="block w-full text-center py-3 rounded font-bold text-white bg-[#4B3DB7] hover:bg-[#3A2E96] transition-all text-xs shadow-lg shadow-indigo-900/20"
+          <button
+            type="button"
+            onClick={handleSelectPlan}
+            className="block w-full text-center py-3 rounded font-bold text-white bg-[#4B3DB7] hover:bg-[#3A2E96] transition-all text-xs shadow-lg shadow-indigo-900/20 cursor-pointer"
           >
             {buttonText}
-          </Link>
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-export default function PricingSection() {
+interface PricingSectionProps {
+  onOpenPassModal?: (params?: any) => void;
+}
+
+export default function PricingSection({ onOpenPassModal }: PricingSectionProps) {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -257,7 +284,7 @@ export default function PricingSection() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {guaranteed.map(plan => (
-                    <Card plan={plan} key={plan.id} />
+                    <Card plan={plan} key={plan.id} onOpenPassModal={onOpenPassModal} />
                   ))}
                 </div>
               </div>
@@ -274,7 +301,7 @@ export default function PricingSection() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {standard.map(plan => (
-                    <Card plan={plan} key={plan.id} />
+                    <Card plan={plan} key={plan.id} onOpenPassModal={onOpenPassModal} />
                   ))}
                 </div>
               </div>

@@ -6,9 +6,10 @@ import { User } from "@/services/user.service";
 
 interface DashboardHeroProps {
     user?: User;
+    onOpenPassModal?: () => void;
 }
 
-export function DashboardHero({ user }: DashboardHeroProps) {
+export function DashboardHero({ user, onOpenPassModal }: DashboardHeroProps) {
     const initials = user?.name
         ? user.name
               .split(" ")
@@ -56,12 +57,23 @@ export function DashboardHero({ user }: DashboardHeroProps) {
                     </div>
                 </div>
 
-                <Link href="/checkout" className="w-full md:w-auto">
-                    <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 shadow-md md:w-auto md:px-6 md:py-3">
+                {onOpenPassModal ? (
+                    <button
+                        type="button"
+                        onClick={onOpenPassModal}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 shadow-md md:w-auto md:px-6 md:py-3 cursor-pointer"
+                    >
                         <span>Pass New Account</span>
                         <Plus className="h-4 w-4" />
                     </button>
-                </Link>
+                ) : (
+                    <Link href="/checkout" className="w-full md:w-auto">
+                        <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 shadow-md md:w-auto md:px-6 md:py-3">
+                            <span>Pass New Account</span>
+                            <Plus className="h-4 w-4" />
+                        </button>
+                    </Link>
+                )}
             </div>
         </div>
     );

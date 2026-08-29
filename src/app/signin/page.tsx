@@ -1,15 +1,17 @@
-// @ts-nocheck
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { authService } from "@/services/auth.service";
 
-export default function SignInPage() {
+function SignInForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const returnUrl = searchParams.get("returnUrl") || "/dashboard";
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -24,7 +26,7 @@ export default function SignInPage() {
             await authService.login(email, password);
             toast.success("Login successful! Redirecting...");
             setTimeout(() => {
-                router.push("/dashboard");
+                router.push(returnUrl);
             }, 1000);
         } catch (err: any) {
             console.error("Login error:", err);
@@ -153,5 +155,13 @@ export default function SignInPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function SignInPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+            <SignInForm />
+        </Suspense>
     );
 }

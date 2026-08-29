@@ -4,6 +4,8 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 import { 
   ShieldCheck, 
   ArrowRight, 
@@ -18,10 +20,35 @@ import {
 
 interface HeroProps {
   onOpenPartnershipModal?: () => void;
+  onOpenPassModal?: (params?: any) => void;
   ctaHref?: string;
 }
 
-export default function Hero({ onOpenPartnershipModal, ctaHref }: HeroProps) {
+export default function Hero({ onOpenPartnershipModal, onOpenPassModal, ctaHref }: HeroProps) {
+  const router = useRouter();
+
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (onOpenPassModal) {
+      onOpenPassModal();
+      return;
+    }
+
+    if (onOpenPartnershipModal && !ctaHref) {
+      onOpenPartnershipModal();
+      return;
+    }
+
+    const targetUrl = ctaHref || '/checkout';
+    const isLoggedIn = typeof window !== 'undefined' && Boolean(localStorage.getItem('access_token'));
+
+    if (isLoggedIn) {
+      router.push(targetUrl);
+    } else {
+      toast.error('Please sign in to proceed with PropPass checkout.');
+      router.push(`/signin?returnUrl=${encodeURIComponent(targetUrl)}`);
+    }
+  };
+
   return (
     <section className="relative bg-white pt-10 sm:pt-14 pb-5 sm:pb-6 overflow-hidden border-b border-slate-100">
       
@@ -164,24 +191,14 @@ export default function Hero({ onOpenPartnershipModal, ctaHref }: HeroProps) {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
-              {ctaHref ? (
-                <Link
-                  href={ctaHref}
-                  className="w-full sm:w-auto px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2 text-xs sm:text-sm group"
-                >
-                  <span>Get Started Now</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={onOpenPartnershipModal}
-                  className="w-full sm:w-auto px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2 text-xs sm:text-sm group"
-                >
-                  <span>Get Started Now</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleCtaClick}
+                className="w-full sm:w-auto px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-xl shadow-blue-600/25 flex items-center justify-center gap-2 text-xs sm:text-sm group"
+              >
+                <span>Get Started Now</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
 
               <Link
                 href="/pricing"

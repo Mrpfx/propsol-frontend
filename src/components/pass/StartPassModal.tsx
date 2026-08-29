@@ -1,0 +1,985 @@
+// @ts-nocheck
+"use client";
+
+import React, { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import {
+    X,
+    Building2,
+    CheckCircle2,
+    ShieldCheck,
+    Info,
+    RefreshCw,
+    Wallet,
+    CreditCard,
+    Copy,
+    Check,
+    Lock,
+    Trophy,
+    Sparkles,
+    AlertCircle
+} from "lucide-react";
+import { toast } from "react-hot-toast";
+import { api } from "@/lib/api";
+import { planService } from "@/services/plan.service";
+import { userService } from "@/services/user.service";
+import { propFirmService } from "@/services/prop-firm.service";
+
+const cryptoService = {
+    getApiStatus: async () => (await api.get("/crypto-payments/status")).data,
+    getAvailableCurrencies: async () => (await api.get("/crypto-payments/currencies")).data,
+    async getMinimumAmount(currency_from: string, currency_to?: string, is_fixed_rate = false, is_fee_paid_by_user = false) {
+        const params = new URLSearchParams({
+            currency_from,
+            ...(currency_to && { currency_to }),
+            is_fixed_rate: is_fixed_rate.toString(),
+            is_fee_paid_by_user: is_fee_paid_by_user.toString()
+        });
+        return (await api.get(`/crypto-payments/min-amount?${params}`)).data;
+    },
+    async getEstimatedPrice(amount: number, currency_from: string, currency_to: string) {
+        const params = new URLSearchParams({
+            amount: amount.toString(),
+            currency_from,
+            currency_to
+        });
+        return (await api.get(`/crypto-payments/estimate?${params}`)).data;
+    },
+    createInvoice: async (data: any) => (await api.post("/crypto-payments/invoice", data)).data,
+    createPayment: async (data: any) => (await api.post("/crypto-payments/payment", data)).data,
+    getPaymentStatus: async (payment_id: string) => (await api.get(`/crypto-payments/payment/${payment_id}/status`)).data,
+    getUserPayments: async () => (await api.get("/crypto-payments")).data,
+    getPaymentById: async (id: string) => (await api.get(`/crypto-payments/${id}`)).data
+};
+
+const PROP_FIRMS = [
+    { id: "FundedNext", name: "FundedNext", badgeColor: "text-purple-400" },
+    { id: "FundingPips", name: "FundingPips", badgeColor: "text-blue-400" },
+    { id: "FTMO", name: "FTMO", badgeColor: "text-blue-500" },
+    { id: "TenTrade", name: "TenTrade", badgeColor: "text-amber-500" }
+];
+
+const ACCOUNT_SIZES = [50000, 90000, 100000, 200000, 500000];
+
+const INITIAL_CHECKOUT_DATA = {
+    model: "pass",
+    propFirm: "",
+    challengeType: "",
+    scope: "",
+    accountSize: 0,
+    packageType: "",
+    price: 0,
+    loginId: "",
+    password: "",
+    serverName: "",
+    serverType: "MT5",
+    platform: "Metatrader 5",
+    whatsapp: "",
+    telegram: "",
+    notes: "",
+    cryptoCurrency: "btc",
+    paymentMethod: "whop", // whop or direct
+    agreedToTerms: false,
+    agreedToRefundPolicy: false,
+    agreedTimeline: false,
+    agreedNoTrading: false,
+    vatPercentage: 0,
+    discountCode: "",
+    discountPercentage: 0
+};
+
+function DirectPaymentView({ payment, onComplete }) {
+    const [copied, setCopied] = useState(false);
+    const [status, setStatus] = useState(payment.payment_status || "waiting");
+    const [checking, setChecking] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(3600);
+
+    const qrUrl = payment.pay_address
+        ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+              `${payment.pay_currency}:${payment.pay_address}?amount=${payment.pay_amount}`
+          )}`
+        : null;
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            checkStatus();
+        }, 30000);
+        return () => clearInterval(timer);
+    }, [payment.payment_id]);
+
+    useEffect(() => {
+        const countdownTimer = setInterval(() => {
+            setTimeLeft((prev) => (prev <= 0 ? (clearInterval(countdownTimer), 0) : prev - 1));
+        }, 1000);
+        return () => clearInterval(countdownTimer);
+    }, []);
+
+    const checkStatus = async () => {
+        if (!payment.payment_id) return;
+        setChecking(true);
+        try {
+            const res = await cryptoService.getPaymentStatus(payment.payment_id);
+            setStatus(res.payment_status);
+            if (res.payment_status === "finished" || res.payment_status === "confirmed") {
+                toast.success("Payment confirmed!");
+                setTimeout(() => onComplete(), 2000);
+            }
+        } catch (err) {
+            console.error("Failed to check payment status:", err);
+        } finally {
+            setChecking(false);
+        }
+    };
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        toast.success("Copied to clipboard!");
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = (seconds % 60).toString().padStart(2, "0");
+        return `${mins}:${secs}`;
+    };
+
+    return (
+        <div className="bg-[#111836] p-5 sm:p-8 rounded-2xl border border-gray-800 max-w-2xl mx-auto space-y-6 text-white">
+            <div className="text-center">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-yellow-900/20 border border-yellow-900/50 mb-4">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+                    <span className="text-xs sm:text-sm font-medium text-yellow-400">Waiting for Crypto Payment</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Complete Your Payment</h2>
+                <p className="text-gray-400 text-xs sm:text-sm">
+                    Send exactly{" "}
+                    <span className="text-white font-semibold">
+                        {payment.pay_amount} {payment.pay_currency?.toUpperCase()}
+                    </span>{" "}
+                    to the wallet address below
+                </p>
+            </div>
+
+            {timeLeft > 0 && (
+                <div className="bg-blue-900/20 border border-blue-900/50 rounded-lg p-3 sm:p-4 text-center">
+                    <p className="text-xs text-blue-300 mb-1">Time remaining to send payment</p>
+                    <p className="text-xl sm:text-2xl font-mono font-bold text-blue-400">{formatTime(timeLeft)}</p>
+                </div>
+            )}
+
+            {qrUrl && (
+                <div className="bg-white p-4 sm:p-6 rounded-xl flex justify-center shadow-lg">
+                    <img src={qrUrl} alt="Payment QR Code" className="w-48 h-48 sm:w-56 sm:h-56" />
+                </div>
+            )}
+
+            <div className="space-y-4">
+                <div className="bg-[#1A2040] p-3.5 sm:p-4 rounded-xl border border-gray-700">
+                    <label className="block text-xs text-gray-400 mb-1">Amount to Send</label>
+                    <div className="flex items-center justify-between">
+                        <span className="text-base sm:text-lg font-mono font-semibold text-white">
+                            {payment.pay_amount} {payment.pay_currency?.toUpperCase()}
+                        </span>
+                        <button
+                            onClick={() => copyToClipboard(payment.pay_amount?.toString() || "")}
+                            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                        >
+                            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="bg-[#1A2040] p-3.5 sm:p-4 rounded-xl border border-gray-700">
+                    <label className="block text-xs text-gray-400 mb-1">Deposit Address ({payment.pay_currency?.toUpperCase()})</label>
+                    <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs sm:text-sm font-mono text-white break-all">{payment.pay_address}</span>
+                        <button
+                            onClick={() => copyToClipboard(payment.pay_address || "")}
+                            className="p-2 hover:bg-gray-700 rounded-lg transition-colors shrink-0"
+                        >
+                            <Copy className="w-4 h-4 text-gray-400" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <button
+                    onClick={checkStatus}
+                    disabled={checking}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm"
+                >
+                    <RefreshCw className={`w-4 h-4 ${checking ? "animate-spin" : ""}`} />
+                    {checking ? "Checking Status..." : "Check Payment Status"}
+                </button>
+                <button
+                    onClick={onComplete}
+                    className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors text-xs sm:text-sm"
+                >
+                    I Have Sent Payment
+                </button>
+            </div>
+        </div>
+    );
+}
+
+interface StartPassModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    initialPlan?: {
+        model?: string;
+        accountType?: string;
+        scope?: string;
+        propFirm?: string;
+        accountSize?: number;
+    };
+}
+
+export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPassModalProps) {
+    const router = useRouter();
+    const [formData, setFormData] = useState(INITIAL_CHECKOUT_DATA);
+    const [plans, setPlans] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [createdPayment, setCreatedPayment] = useState(null);
+    const [isCustomFirm, setIsCustomFirm] = useState(false);
+    const [customFirmInput, setCustomFirmInput] = useState("");
+
+    // Initialize or reset state when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            let initialChallengeType = "";
+            let initialScope = "";
+
+            if (initialPlan?.accountType) {
+                if (initialPlan.accountType.includes("1-step") || initialPlan.accountType.includes("1step")) {
+                    initialChallengeType = "1-Step Challenge";
+                } else if (initialPlan.accountType.includes("2-step") || initialPlan.accountType.includes("2step")) {
+                    initialChallengeType = "2-Step Challenge";
+                }
+            }
+
+            if (initialPlan?.scope) {
+                if (initialPlan.scope === "step-1" || initialPlan.scope === "Step 1 Only") {
+                    initialScope = "Step 1 Only";
+                } else if (initialPlan.scope === "full" || initialPlan.scope === "Full Pass") {
+                    initialScope = "Full Pass";
+                }
+            }
+
+            setFormData({
+                ...INITIAL_CHECKOUT_DATA,
+                propFirm: initialPlan?.propFirm || "",
+                challengeType: initialChallengeType,
+                scope: initialScope,
+                accountSize: initialPlan?.accountSize || 0
+            });
+            setCreatedPayment(null);
+            setIsCustomFirm(false);
+            setCustomFirmInput("");
+        }
+    }, [isOpen, initialPlan]);
+
+    // Fetch pricing plans and VAT
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const fetchPlans = async () => {
+            try {
+                const fetchedPlans = await planService.getAllPlans();
+                if (fetchedPlans && fetchedPlans.length > 0) {
+                    setPlans(fetchedPlans);
+                }
+            } catch (err) {
+                console.error("Failed to fetch plans", err);
+            }
+        };
+
+        const fetchVat = async () => {
+            try {
+                const res = await api.get("/discounts/vat");
+                if (res.data && res.data.length > 0) {
+                    setFormData((prev) => ({ ...prev, vatPercentage: res.data[0].percentage }));
+                }
+            } catch (err) {
+                console.error("Failed to fetch VAT", err);
+            }
+        };
+
+        fetchVat();
+        fetchPlans();
+    }, [isOpen]);
+
+    // Progressive selection completion flags
+    const isStep1Done = Boolean(formData.propFirm);
+    const isStep2Done = Boolean(formData.challengeType) && (formData.challengeType !== "2-Step Challenge" || Boolean(formData.scope));
+    const isStep3Done = formData.accountSize > 0;
+    const isStep4Done = Boolean(formData.packageType);
+    const isStep5Done = formData.agreedTimeline && formData.agreedNoTrading;
+    const isStep6Done = Boolean(formData.loginId && formData.password);
+
+    const computedPrices = useMemo(() => {
+        if (!formData.challengeType || formData.accountSize === 0) {
+            return { standard: 0, guaranteed: 0 };
+        }
+
+        const challengeTypeSlug = formData.challengeType === "1-Step Challenge" ? "1-step" : "2-step";
+        let scopeSlug = "full";
+        if (formData.challengeType === "2-Step Challenge") {
+            scopeSlug = formData.scope === "Step 1 Only" ? "step-1" : "full";
+        }
+        const stdSlug = `standard-${challengeTypeSlug}-${scopeSlug}`;
+        const grtSlug = `guaranteed-${challengeTypeSlug}-${scopeSlug}`;
+
+        const stdPlan = plans.find((p) => p.slug === stdSlug);
+        const grtPlan = plans.find((p) => p.slug === grtSlug);
+
+        const getPriceForSize = (plan: any, size: number) => {
+            if (!plan || !plan.prices) return 0;
+            const match = plan.prices.find((p: any) => p.account_size === size);
+            return match ? match.price : 0;
+        };
+
+        const defaultStdPrices = { 50000: 490, 90000: 590, 100000: 690, 200000: 990, 500000: 1390 };
+        const defaultGrtPrices = { 50000: 800, 90000: 950, 100000: 1200, 200000: 1700, 500000: 2500 };
+
+        const stdPrice = getPriceForSize(stdPlan, formData.accountSize) || defaultStdPrices[formData.accountSize] || 0;
+        const grtPrice = getPriceForSize(grtPlan, formData.accountSize) || defaultGrtPrices[formData.accountSize] || 0;
+
+        return {
+            standard: stdPrice,
+            guaranteed: grtPrice
+        };
+    }, [formData.challengeType, formData.scope, formData.accountSize, plans]);
+
+    useEffect(() => {
+        if (formData.accountSize > 0 && formData.packageType) {
+            const targetPrice = formData.packageType === "Standard Pass" ? computedPrices.standard : computedPrices.guaranteed;
+            if (targetPrice > 0 && formData.price !== targetPrice) {
+                setFormData((prev) => ({ ...prev, price: targetPrice }));
+            }
+        }
+    }, [formData.packageType, formData.accountSize, computedPrices]);
+
+    const updateData = (fields: Partial<typeof INITIAL_CHECKOUT_DATA>) => {
+        setFormData((prev) => ({ ...prev, ...fields }));
+    };
+
+    const handleSubmitOrder = async () => {
+        if (!formData.propFirm) {
+            toast.error("Please select a Prop Firm");
+            return;
+        }
+        if (!formData.challengeType || (formData.challengeType === "2-Step Challenge" && !formData.scope)) {
+            toast.error("Please select Challenge Type & Scope");
+            return;
+        }
+        if (!formData.accountSize) {
+            toast.error("Please select an Account Size");
+            return;
+        }
+        if (!formData.packageType) {
+            toast.error("Please select a Package Level");
+            return;
+        }
+        if (!formData.agreedTimeline || !formData.agreedNoTrading) {
+            toast.error("Please confirm the timeline and rules agreement");
+            return;
+        }
+        if (!formData.loginId || !formData.password) {
+            toast.error("Please enter your account login credentials");
+            return;
+        }
+        if (!formData.agreedToTerms || !formData.agreedToRefundPolicy) {
+            toast.error("Please agree to the Terms of Service and Refund Policy");
+            return;
+        }
+
+        const isLoggedIn = typeof window !== 'undefined' && Boolean(localStorage.getItem("access_token"));
+        if (!isLoggedIn) {
+            toast.error("Please login to complete your order");
+            onClose();
+            const targetUrl = "/checkout";
+            router.push(`/signin?returnUrl=${encodeURIComponent(targetUrl)}`);
+            return;
+        }
+
+        setLoading(true);
+
+        const discountedPrice = formData.price * (1 - (formData.discountPercentage || 0) / 100);
+        const finalCost = discountedPrice + (discountedPrice * (formData.vatPercentage || 0)) / 100;
+
+        try {
+            await userService.getCurrentUser();
+
+            const formattedRules = `[Pass Package: ${formData.packageType}] ${formData.notes || "Evaluation Pass setup"}`;
+            const regResult = await propFirmService.createRegistration({
+                login_id: formData.loginId,
+                password: formData.password,
+                propfirm_name: formData.propFirm,
+                propfirm_website_link: "https://example.com",
+                server_name: formData.serverName || "Live Server",
+                server_type: formData.serverType || "MT5",
+                challenges_step: formData.challengeType === "1-Step Challenge" ? 1 : 2,
+                service_scope: formData.scope === "Step 1 Only" ? 1 : 2,
+                propfirm_account_cost: finalCost,
+                account_size: formData.accountSize,
+                account_phases: formData.challengeType === "1-Step Challenge" ? 1 : 2,
+                trading_platform: formData.platform || "Metatrader 5",
+                propfirm_rules: formattedRules,
+                whatsapp_no: formData.whatsapp || "",
+                telegram_username: formData.telegram || "",
+                pass_type: formData.packageType === "Guaranteed Pass" ? "guaranteed_pass" : "standard_pass"
+            });
+
+            const regOrderId = regResult?.order_id || regResult?.id;
+
+            if (!regResult || !regOrderId) {
+                throw new Error("Registration failed to return an order ID.");
+            }
+
+            if (formData.paymentMethod === "whop") {
+                const whopRes = await propFirmService.createWhopCheckoutLink(regOrderId);
+                if (whopRes.checkout_url) {
+                    toast.success("Redirecting to Whop checkout...");
+                    onClose();
+                    window.location.href = whopRes.checkout_url;
+                } else {
+                    throw new Error("Failed to get Whop checkout URL");
+                }
+            } else if (formData.paymentMethod === "direct") {
+                const paymentRes = await cryptoService.createPayment({
+                    price_amount: finalCost,
+                    price_currency: "usd",
+                    pay_currency: formData.cryptoCurrency,
+                    order_id: `PASS-${regOrderId}`,
+                    order_description: `PropSol Pass ${formData.packageType} - $${formData.accountSize.toLocaleString()}`
+                });
+                setCreatedPayment(paymentRes);
+                toast.success("Crypto payment generated!");
+            }
+        } catch (err: any) {
+            console.error("Order submission failed:", err);
+            toast.error(err.response?.data?.detail || "Failed to process order. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+            <div className="relative w-full max-w-4xl bg-[#090e23] border border-slate-800/80 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col text-white">
+                
+                {/* Modal Header */}
+                <div className="sticky top-0 z-20 bg-[#090e23]/95 backdrop-blur-md px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-800/60 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner shrink-0">
+                            <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </div>
+                        <div>
+                            <h2 className="text-base sm:text-xl font-bold text-white tracking-tight">PropSol Pass Evaluation Checkout</h2>
+                            <p className="text-[10px] sm:text-xs text-slate-400">Progressive selection for your evaluation account.</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+                    >
+                        <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar space-y-6 sm:space-y-8">
+                    {createdPayment ? (
+                        <DirectPaymentView payment={createdPayment} onComplete={() => { onClose(); router.push("/dashboard"); }} />
+                    ) : (
+                        <div className="space-y-6 sm:space-y-8">
+
+                            {/* STEP 1: SELECT PROP FIRM (Always Displayed) */}
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                                        <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">1</span>
+                                        <span>SELECT PROP FIRM</span>
+                                    </div>
+                                    {isStep1Done ? (
+                                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                            <CheckCircle2 className="w-3.5 h-3.5" /> {formData.propFirm}
+                                        </span>
+                                    ) : (
+                                        <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                            Select prop firm to continue
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    {PROP_FIRMS.map((firm) => {
+                                        const isSelected = !isCustomFirm && formData.propFirm === firm.name;
+                                        return (
+                                            <button
+                                                key={firm.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setIsCustomFirm(false);
+                                                    updateData({ propFirm: firm.name });
+                                                }}
+                                                className={`p-3.5 sm:p-4 rounded-xl border transition-all duration-300 text-center flex flex-col items-center justify-center gap-2 cursor-pointer ${
+                                                    isSelected
+                                                        ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
+                                                        : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
+                                                }`}
+                                            >
+                                                <Building2 className={`w-5 h-5 ${firm.badgeColor}`} />
+                                                <span className="font-bold text-xs text-white">{firm.name}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Custom Firm Input Toggle */}
+                                <div className="pt-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCustomFirm(!isCustomFirm)}
+                                        className="text-xs text-blue-400 hover:underline font-semibold"
+                                    >
+                                        {isCustomFirm ? "← Select from popular firms" : "+ Specify another prop firm"}
+                                    </button>
+                                    {isCustomFirm && (
+                                        <div className="mt-2 flex gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Enter prop firm name..."
+                                                value={customFirmInput}
+                                                onChange={(e) => setCustomFirmInput(e.target.value)}
+                                                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-blue-500"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (customFirmInput.trim()) {
+                                                        updateData({ propFirm: customFirmInput.trim() });
+                                                    }
+                                                }}
+                                                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl cursor-pointer"
+                                            >
+                                                Confirm
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* STEP 2: CHALLENGE TYPE & SCOPE (Displayed ONLY after Step 1 is selected) */}
+                            {isStep1Done && (
+                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">2</span>
+                                            <span>CHALLENGE TYPE & SCOPE</span>
+                                        </div>
+                                        {isStep2Done ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                                <CheckCircle2 className="w-3.5 h-3.5" /> {formData.challengeType}{formData.scope ? ` (${formData.scope})` : ""}
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                                Select challenge type to continue
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => updateData({ challengeType: "1-Step Challenge", scope: "Full Pass" })}
+                                            className={`p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                                formData.challengeType === "1-Step Challenge"
+                                                    ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
+                                                    : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
+                                            }`}
+                                        >
+                                            <div className="font-bold text-sm text-white mb-1">1-Step Challenge</div>
+                                            <div className="text-xs text-slate-400">Single phase evaluation model directly to funded status.</div>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => updateData({ challengeType: "2-Step Challenge" })}
+                                            className={`p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                                formData.challengeType === "2-Step Challenge"
+                                                    ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
+                                                    : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
+                                            }`}
+                                        >
+                                            <div className="font-bold text-sm text-white mb-1">2-Step Challenge</div>
+                                            <div className="text-xs text-slate-400">Two phase evaluation model (Phase 1 & Phase 2).</div>
+                                        </button>
+                                    </div>
+
+                                    {formData.challengeType === "2-Step Challenge" && (
+                                        <div className="pt-2 space-y-2 border-t border-slate-800/40">
+                                            <label className="text-xs font-semibold text-slate-300">Select 2-Step Scope:</label>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => updateData({ scope: "Step 1 Only" })}
+                                                    className={`p-3 rounded-xl border text-left transition-all text-xs cursor-pointer ${
+                                                        formData.scope === "Step 1 Only"
+                                                            ? "bg-blue-600/20 border-blue-500 font-bold text-white"
+                                                            : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
+                                                    }`}
+                                                >
+                                                    Step 1 Only
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => updateData({ scope: "Full Pass" })}
+                                                    className={`p-3 rounded-xl border text-left transition-all text-xs cursor-pointer ${
+                                                        formData.scope === "Full Pass"
+                                                            ? "bg-blue-600/20 border-blue-500 font-bold text-white"
+                                                            : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
+                                                    }`}
+                                                >
+                                                    Full 2-Step Pass (Phase 1 & 2)
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* STEP 3: ACCOUNT SIZE (Displayed ONLY after Step 1 & 2 are selected) */}
+                            {isStep1Done && isStep2Done && (
+                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">3</span>
+                                            <span>SELECT ACCOUNT SIZE</span>
+                                        </div>
+                                        {isStep3Done ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                                <CheckCircle2 className="w-3.5 h-3.5" /> ${formData.accountSize.toLocaleString()}
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                                Select account size to continue
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                                        {ACCOUNT_SIZES.map((size) => (
+                                            <button
+                                                key={size}
+                                                type="button"
+                                                onClick={() => updateData({ accountSize: size })}
+                                                className={`p-3.5 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                                    formData.accountSize === size
+                                                        ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
+                                                        : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
+                                                }`}
+                                            >
+                                                <div className="font-bold text-sm text-white">${size.toLocaleString()}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* STEP 4: PACKAGE LEVEL & PRICE (Displayed ONLY after Step 1, 2 & 3 are selected) */}
+                            {isStep1Done && isStep2Done && isStep3Done && (
+                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">4</span>
+                                            <span>PACKAGE LEVEL & PRICE</span>
+                                        </div>
+                                        {isStep4Done ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                                <CheckCircle2 className="w-3.5 h-3.5" /> {formData.packageType} (${formData.price})
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                                Select package level to continue
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {/* Standard Pass */}
+                                        <button
+                                            type="button"
+                                            onClick={() => updateData({ packageType: "Standard Pass", price: computedPrices.standard })}
+                                            className={`p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                                formData.packageType === "Standard Pass"
+                                                    ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
+                                                    : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
+                                            }`}
+                                        >
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="font-bold text-base text-white">Standard Pass</span>
+                                                <span className="font-extrabold text-blue-400 text-lg">${computedPrices.standard}</span>
+                                            </div>
+                                            <p className="text-xs text-slate-400">Professional evaluation handling with standard pass guarantee.</p>
+                                        </button>
+
+                                        {/* Guaranteed Pass */}
+                                        <button
+                                            type="button"
+                                            onClick={() => updateData({ packageType: "Guaranteed Pass", price: computedPrices.guaranteed })}
+                                            className={`p-4 rounded-xl border text-left transition-all duration-300 relative cursor-pointer ${
+                                                formData.packageType === "Guaranteed Pass"
+                                                    ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
+                                                    : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
+                                            }`}
+                                        >
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="font-bold text-base text-white flex items-center gap-1.5">
+                                                    Guaranteed Pass
+                                                    <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-bold">Refund + $100</span>
+                                                </span>
+                                                <span className="font-extrabold text-blue-400 text-lg">${computedPrices.guaranteed}</span>
+                                            </div>
+                                            <p className="text-xs text-slate-400">Full refund + $100 compensation if evaluation is not passed.</p>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* STEP 5: COMPLIANCE & RULES (Displayed ONLY after Step 1, 2, 3 & 4 are selected) */}
+                            {isStep1Done && isStep2Done && isStep3Done && isStep4Done && (
+                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">5</span>
+                                            <span>COMPLIANCE & RULES AGREEMENT</span>
+                                        </div>
+                                        {isStep5Done ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                                <CheckCircle2 className="w-3.5 h-3.5" /> Rules Confirmed
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                                Confirm rules to continue
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="flex items-start gap-3 cursor-pointer p-3.5 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.agreedTimeline}
+                                                onChange={(e) => updateData({ agreedTimeline: e.target.checked })}
+                                                className="mt-0.5 w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500"
+                                            />
+                                            <span className="text-xs text-slate-300">
+                                                I understand the evaluation completion timeline (typically 3 - 7 business days).
+                                            </span>
+                                        </label>
+
+                                        <label className="flex items-start gap-3 cursor-pointer p-3.5 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.agreedNoTrading}
+                                                onChange={(e) => updateData({ agreedNoTrading: e.target.checked })}
+                                                className="mt-0.5 w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500"
+                                            />
+                                            <span className="text-xs text-slate-300">
+                                                I agree NOT to log into or place any trades on the account while evaluation is in progress.
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* STEP 6: ACCOUNT LOGIN CREDENTIALS (Displayed ONLY after Step 1..5 are selected) */}
+                            {isStep1Done && isStep2Done && isStep3Done && isStep4Done && isStep5Done && (
+                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">6</span>
+                                            <span>ACCOUNT LOGIN CREDENTIALS</span>
+                                        </div>
+                                        {isStep6Done ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                                <CheckCircle2 className="w-3.5 h-3.5" /> ID: {formData.loginId}
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                                Enter credentials to continue
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Account ID / Login Number *</label>
+                                            <input
+                                                type="text"
+                                                value={formData.loginId}
+                                                onChange={(e) => updateData({ loginId: e.target.value })}
+                                                placeholder="e.g. 1029384"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Trader Password *</label>
+                                            <input
+                                                type="password"
+                                                value={formData.password}
+                                                onChange={(e) => updateData({ password: e.target.value })}
+                                                placeholder="************"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Server Name</label>
+                                            <input
+                                                type="text"
+                                                value={formData.serverName}
+                                                onChange={(e) => updateData({ serverName: e.target.value })}
+                                                placeholder="e.g. FTMO-Server2"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Platform</label>
+                                            <select
+                                                value={formData.platform}
+                                                onChange={(e) => updateData({ platform: e.target.value })}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+                                            >
+                                                <option value="Metatrader 5">MetaTrader 5 (MT5)</option>
+                                                <option value="Metatrader 4">MetaTrader 4 (MT4)</option>
+                                                <option value="cTrader">cTrader</option>
+                                                <option value="DXtrade">DXtrade</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* STEP 7: ORDER SUMMARY & PAYMENT (Displayed ONLY after Step 1..6 are selected) */}
+                            {isStep1Done && isStep2Done && isStep3Done && isStep4Done && isStep5Done && isStep6Done && (
+                                <div className="space-y-4 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
+                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">7</span>
+                                            <span>ORDER SUMMARY & PAYMENT</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Order Summary Box */}
+                                    <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2.5 text-xs">
+                                        <div className="flex justify-between text-slate-400">
+                                            <span>Prop Firm:</span>
+                                            <span className="font-bold text-white">{formData.propFirm}</span>
+                                        </div>
+                                        <div className="flex justify-between text-slate-400">
+                                            <span>Challenge Type & Scope:</span>
+                                            <span className="font-bold text-white">{formData.challengeType} ({formData.scope})</span>
+                                        </div>
+                                        <div className="flex justify-between text-slate-400">
+                                            <span>Account Size:</span>
+                                            <span className="font-bold text-white">${formData.accountSize.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between text-slate-400">
+                                            <span>Package Level:</span>
+                                            <span className="font-bold text-white">{formData.packageType}</span>
+                                        </div>
+                                        <div className="flex justify-between text-slate-400 border-t border-slate-800 pt-2.5 font-bold text-sm">
+                                            <span className="text-white">Total Amount:</span>
+                                            <span className="text-blue-400">${formData.price} USD</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Payment Method Selection */}
+                                    <div className="space-y-2 pt-2">
+                                        <label className="text-xs font-semibold text-slate-300">Select Payment Method:</label>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => updateData({ paymentMethod: "whop" })}
+                                                className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                                                    formData.paymentMethod === "whop"
+                                                        ? "bg-blue-600/20 border-blue-500 font-bold text-white"
+                                                        : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
+                                                }`}
+                                            >
+                                                <span className="text-xs">Whop Pay (Cards / Apple Pay)</span>
+                                                <CreditCard className="w-4 h-4 text-blue-400" />
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => updateData({ paymentMethod: "direct" })}
+                                                className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                                                    formData.paymentMethod === "direct"
+                                                        ? "bg-blue-600/20 border-blue-500 font-bold text-white"
+                                                        : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
+                                                }`}
+                                            >
+                                                <span className="text-xs">Crypto Pay (BTC, USDT, ETH)</span>
+                                                <Wallet className="w-4 h-4 text-amber-400" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Terms Agreement */}
+                                    <div className="space-y-2 pt-2">
+                                        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-400">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.agreedToTerms}
+                                                onChange={(e) => updateData({ agreedToTerms: e.target.checked })}
+                                                className="w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800"
+                                            />
+                                            <span>I agree to the Terms of Service</span>
+                                        </label>
+                                        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-400">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.agreedToRefundPolicy}
+                                                onChange={(e) => updateData({ agreedToRefundPolicy: e.target.checked })}
+                                                className="w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800"
+                                            />
+                                            <span>I agree to the Refund Policy</span>
+                                        </label>
+                                    </div>
+
+                                    {/* Submit Order Button */}
+                                    <button
+                                        type="button"
+                                        disabled={loading || !formData.agreedToTerms || !formData.agreedToRefundPolicy}
+                                        onClick={handleSubmitOrder}
+                                        className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black rounded-xl text-sm transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 mt-4 cursor-pointer"
+                                    >
+                                        {loading ? (
+                                            <>
+                                                <RefreshCw className="w-4 h-4 animate-spin" />
+                                                <span>Processing Order...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Lock className="w-4 h-4" />
+                                                <span>Complete Order (${formData.price} USD)</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+
+                        </div>
+                    )}
+                </div>
+
+            </div>
+        </div>
+    );
+}

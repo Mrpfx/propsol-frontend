@@ -16,6 +16,7 @@ import { partnershipService } from "@/services/partnership.service";
 
 import { PartnershipAccountsView } from "@/components/dashboard/PartnershipAccountsView";
 import StartPartnershipModal from "@/components/partnership/StartPartnershipModal";
+import StartPassModal from "@/components/pass/StartPassModal";
 
 type Tab = "all" | "partnership" | "history" | "notifications" | "referrals";
 
@@ -27,6 +28,7 @@ function DashboardContent() {
     const [partnershipAccounts, setPartnershipAccounts] = useState<PropFirmRegistration[]>([]);
     const [loading, setLoading] = useState(true);
     const [isPartnershipModalOpen, setIsPartnershipModalOpen] = useState(false);
+    const [isPassModalOpen, setIsPassModalOpen] = useState(false);
 
     useEffect(() => {
         const tabParam = searchParams.get("tab");
@@ -89,7 +91,7 @@ function DashboardContent() {
         <div className="min-h-screen bg-white">
             <DashboardHeader user={user} />
             <main>
-                <DashboardHero user={user} />
+                <DashboardHero user={user} onOpenPassModal={() => setIsPassModalOpen(true)} />
 
                 <div className="container mx-auto px-4 py-8">
                     {/* Tab Navigation */}
@@ -165,6 +167,10 @@ function DashboardContent() {
             <StartPartnershipModal
                 isOpen={isPartnershipModalOpen}
                 onClose={() => setIsPartnershipModalOpen(false)}
+            />
+            <StartPassModal
+                isOpen={isPassModalOpen}
+                onClose={() => setIsPassModalOpen(false)}
             />
         </div>
     );

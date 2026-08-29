@@ -3,6 +3,8 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 import { 
   Brain, 
   DollarSign, 
@@ -14,8 +16,34 @@ import {
 
 interface FeaturesProps {
   onOpenPartnershipModal?: () => void;
+  onOpenPassModal?: (params?: any) => void;
   ctaHref?: string;
 }
+
+export default function Features({ onOpenPartnershipModal, onOpenPassModal, ctaHref }: FeaturesProps) {
+  const router = useRouter();
+
+  const handleCtaClick = (e: React.MouseEvent) => {
+    if (onOpenPassModal) {
+      onOpenPassModal();
+      return;
+    }
+
+    if (onOpenPartnershipModal && !ctaHref) {
+      onOpenPartnershipModal();
+      return;
+    }
+
+    const targetUrl = ctaHref || '/checkout';
+    const isLoggedIn = typeof window !== 'undefined' && Boolean(localStorage.getItem('access_token'));
+
+    if (isLoggedIn) {
+      router.push(targetUrl);
+    } else {
+      toast.error('Please sign in to proceed with PropPass checkout.');
+      router.push(`/signin?returnUrl=${encodeURIComponent(targetUrl)}`);
+    }
+  };
 
 const failureReasons = [
   {
@@ -56,7 +84,6 @@ const failureReasons = [
   }
 ];
 
-export default function Features({ onOpenPartnershipModal, ctaHref }: FeaturesProps) {
   return (
     <section className="py-12 sm:py-20 bg-[#f8fafc]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
@@ -132,24 +159,14 @@ export default function Features({ onOpenPartnershipModal, ctaHref }: FeaturesPr
               </div>
             </div>
 
-            {ctaHref ? (
-              <Link
-                href={ctaHref}
-                className="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 text-xs sm:text-sm whitespace-nowrap shrink-0 group"
-              >
-                <span>Get Started Today</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={onOpenPartnershipModal}
-                className="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 text-xs sm:text-sm whitespace-nowrap shrink-0 group"
-              >
-                <span>Get Started Today</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleCtaClick}
+              className="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 text-xs sm:text-sm whitespace-nowrap shrink-0 group"
+            >
+              <span>Get Started Today</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
 
         </div>
