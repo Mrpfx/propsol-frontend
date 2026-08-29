@@ -469,18 +469,18 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fadeIn">
-            <div className="relative w-full max-w-4xl bg-[#090e23] border border-slate-800/80 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col text-white">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+            <div className="relative w-full max-w-3xl bg-[#090e23] border border-slate-800/80 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col text-white">
                 
                 {/* Modal Header */}
-                <div className="sticky top-0 z-20 bg-[#090e23]/95 backdrop-blur-md px-4 py-3.5 sm:px-6 sm:py-4 border-b border-slate-800/60 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner shrink-0">
+                <div className="sticky top-0 z-20 bg-[#090e23]/95 backdrop-blur-md px-3.5 py-3 sm:px-6 sm:py-4 border-b border-slate-800/60 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                        <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner shrink-0">
                             <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                         <div>
-                            <h2 className="text-base sm:text-xl font-bold text-white tracking-tight">PropSol Pass Evaluation Checkout</h2>
-                            <p className="text-[10px] sm:text-xs text-slate-400">Progressive selection for your evaluation account.</p>
+                            <h2 className="text-sm sm:text-lg font-bold text-white tracking-tight">PropSol Pass Evaluation Checkout</h2>
+                            <p className="text-[10px] sm:text-xs text-slate-400">Step-by-step selection for your evaluation account.</p>
                         </div>
                     </div>
                     <button
@@ -492,14 +492,14 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                 </div>
 
                 {/* Modal Body */}
-                <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar space-y-6 sm:space-y-8">
+                <div className="p-3.5 sm:p-6 overflow-y-auto custom-scrollbar space-y-4 sm:space-y-6">
                     {createdPayment ? (
                         <DirectPaymentView payment={createdPayment} onComplete={() => { onClose(); router.push("/dashboard"); }} />
                     ) : (
-                        <div className="space-y-6 sm:space-y-8">
+                        <div className="space-y-4 sm:space-y-6">
 
                             {/* STEP 1: SELECT PROP FIRM (Always Displayed) */}
-                            <div className="space-y-3">
+                            <div className="space-y-2.5 sm:space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                                         <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">1</span>
@@ -516,7 +516,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                     )}
                                 </div>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                                     {PROP_FIRMS.map((firm) => {
                                         const isSelected = !isCustomFirm && formData.propFirm === firm.name;
                                         return (
@@ -527,13 +527,13 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                                     setIsCustomFirm(false);
                                                     updateData({ propFirm: firm.name });
                                                 }}
-                                                className={`p-3.5 sm:p-4 rounded-xl border transition-all duration-300 text-center flex flex-col items-center justify-center gap-2 cursor-pointer ${
+                                                className={`p-2.5 sm:p-3.5 rounded-xl border transition-all duration-300 text-center flex flex-col items-center justify-center gap-1.5 cursor-pointer ${
                                                     isSelected
                                                         ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                         : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                                 }`}
                                             >
-                                                <Building2 className={`w-5 h-5 ${firm.badgeColor}`} />
+                                                <Building2 className={`w-4 h-4 sm:w-5 sm:h-5 ${firm.badgeColor}`} />
                                                 <span className="font-bold text-xs text-white">{firm.name}</span>
                                             </button>
                                         );
@@ -541,11 +541,11 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                 </div>
 
                                 {/* Custom Firm Input Toggle */}
-                                <div className="pt-1">
+                                <div className="pt-0.5">
                                     <button
                                         type="button"
                                         onClick={() => setIsCustomFirm(!isCustomFirm)}
-                                        className="text-xs text-blue-400 hover:underline font-semibold"
+                                        className="text-[11px] sm:text-xs text-blue-400 hover:underline font-semibold"
                                     >
                                         {isCustomFirm ? "← Select from popular firms" : "+ Specify another prop firm"}
                                     </button>
@@ -556,7 +556,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                                 placeholder="Enter prop firm name..."
                                                 value={customFirmInput}
                                                 onChange={(e) => setCustomFirmInput(e.target.value)}
-                                                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-blue-500"
+                                                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
                                             />
                                             <button
                                                 type="button"
@@ -565,7 +565,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                                         updateData({ propFirm: customFirmInput.trim() });
                                                     }
                                                 }}
-                                                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl cursor-pointer"
+                                                className="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl cursor-pointer"
                                             >
                                                 Confirm
                                             </button>
@@ -576,7 +576,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 2: CHALLENGE TYPE & SCOPE (Displayed ONLY after Step 1 is selected) */}
                             {isStep1Done && (
-                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                                             <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">2</span>
@@ -593,42 +593,42 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                                         <button
                                             type="button"
                                             onClick={() => updateData({ challengeType: "1-Step Challenge", scope: "Full Pass" })}
-                                            className={`p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                            className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
                                                 formData.challengeType === "1-Step Challenge"
                                                     ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                     : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                             }`}
                                         >
-                                            <div className="font-bold text-sm text-white mb-1">1-Step Challenge</div>
-                                            <div className="text-xs text-slate-400">Single phase evaluation model directly to funded status.</div>
+                                            <div className="font-bold text-xs sm:text-sm text-white mb-0.5 sm:mb-1">1-Step Challenge</div>
+                                            <div className="text-[11px] sm:text-xs text-slate-400">Single phase evaluation model directly to funded status.</div>
                                         </button>
 
                                         <button
                                             type="button"
                                             onClick={() => updateData({ challengeType: "2-Step Challenge" })}
-                                            className={`p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                            className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
                                                 formData.challengeType === "2-Step Challenge"
                                                     ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                     : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                             }`}
                                         >
-                                            <div className="font-bold text-sm text-white mb-1">2-Step Challenge</div>
-                                            <div className="text-xs text-slate-400">Two phase evaluation model (Phase 1 & Phase 2).</div>
+                                            <div className="font-bold text-xs sm:text-sm text-white mb-0.5 sm:mb-1">2-Step Challenge</div>
+                                            <div className="text-[11px] sm:text-xs text-slate-400">Two phase evaluation model (Phase 1 & Phase 2).</div>
                                         </button>
                                     </div>
 
                                     {formData.challengeType === "2-Step Challenge" && (
                                         <div className="pt-2 space-y-2 border-t border-slate-800/40">
                                             <label className="text-xs font-semibold text-slate-300">Select 2-Step Scope:</label>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <div className="grid grid-cols-2 gap-2 sm:gap-3">
                                                 <button
                                                     type="button"
                                                     onClick={() => updateData({ scope: "Step 1 Only" })}
-                                                    className={`p-3 rounded-xl border text-left transition-all text-xs cursor-pointer ${
+                                                    className={`p-2.5 sm:p-3 rounded-xl border text-center sm:text-left transition-all text-xs cursor-pointer ${
                                                         formData.scope === "Step 1 Only"
                                                             ? "bg-blue-600/20 border-blue-500 font-bold text-white"
                                                             : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
@@ -639,13 +639,13 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                                 <button
                                                     type="button"
                                                     onClick={() => updateData({ scope: "Full Pass" })}
-                                                    className={`p-3 rounded-xl border text-left transition-all text-xs cursor-pointer ${
+                                                    className={`p-2.5 sm:p-3 rounded-xl border text-center sm:text-left transition-all text-xs cursor-pointer ${
                                                         formData.scope === "Full Pass"
                                                             ? "bg-blue-600/20 border-blue-500 font-bold text-white"
                                                             : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
                                                     }`}
                                                 >
-                                                    Full 2-Step Pass (Phase 1 & 2)
+                                                    Full Pass (Phase 1 & 2)
                                                 </button>
                                             </div>
                                         </div>
@@ -655,7 +655,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 3: ACCOUNT SIZE (Displayed ONLY after Step 1 & 2 are selected) */}
                             {isStep1Done && isStep2Done && (
-                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                                             <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">3</span>
@@ -672,19 +672,19 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                                         {ACCOUNT_SIZES.map((size) => (
                                             <button
                                                 key={size}
                                                 type="button"
                                                 onClick={() => updateData({ accountSize: size })}
-                                                className={`p-3.5 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                                className={`p-2.5 sm:p-3 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
                                                     formData.accountSize === size
-                                                        ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
+                                                        ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10 font-bold"
                                                         : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                                 }`}
                                             >
-                                                <div className="font-bold text-sm text-white">${size.toLocaleString()}</div>
+                                                <div className="font-bold text-xs sm:text-sm text-white">${size.toLocaleString()}</div>
                                             </button>
                                         ))}
                                     </div>
@@ -693,7 +693,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 4: PACKAGE LEVEL & PRICE (Displayed ONLY after Step 1, 2 & 3 are selected) */}
                             {isStep1Done && isStep2Done && isStep3Done && (
-                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                                             <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">4</span>
@@ -710,42 +710,42 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                                         {/* Standard Pass */}
                                         <button
                                             type="button"
                                             onClick={() => updateData({ packageType: "Standard Pass", price: computedPrices.standard })}
-                                            className={`p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                            className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
                                                 formData.packageType === "Standard Pass"
                                                     ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                     : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                             }`}
                                         >
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span className="font-bold text-base text-white">Standard Pass</span>
-                                                <span className="font-extrabold text-blue-400 text-lg">${computedPrices.standard}</span>
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="font-bold text-xs sm:text-sm text-white">Standard Pass</span>
+                                                <span className="font-extrabold text-blue-400 text-sm sm:text-base">${computedPrices.standard}</span>
                                             </div>
-                                            <p className="text-xs text-slate-400">Professional evaluation handling with standard pass guarantee.</p>
+                                            <p className="text-[11px] sm:text-xs text-slate-400">Professional evaluation handling with standard pass guarantee.</p>
                                         </button>
 
                                         {/* Guaranteed Pass */}
                                         <button
                                             type="button"
                                             onClick={() => updateData({ packageType: "Guaranteed Pass", price: computedPrices.guaranteed })}
-                                            className={`p-4 rounded-xl border text-left transition-all duration-300 relative cursor-pointer ${
+                                            className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 relative cursor-pointer ${
                                                 formData.packageType === "Guaranteed Pass"
                                                     ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                     : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                             }`}
                                         >
-                                            <div className="flex justify-between items-center mb-2">
-                                                <span className="font-bold text-base text-white flex items-center gap-1.5">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
                                                     Guaranteed Pass
-                                                    <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-bold">Refund + $100</span>
+                                                    <span className="text-[9px] sm:text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-bold">Refund + $100</span>
                                                 </span>
-                                                <span className="font-extrabold text-blue-400 text-lg">${computedPrices.guaranteed}</span>
+                                                <span className="font-extrabold text-blue-400 text-sm sm:text-base">${computedPrices.guaranteed}</span>
                                             </div>
-                                            <p className="text-xs text-slate-400">Full refund + $100 compensation if evaluation is not passed.</p>
+                                            <p className="text-[11px] sm:text-xs text-slate-400">Full refund + $100 compensation if evaluation is not passed.</p>
                                         </button>
                                     </div>
                                 </div>
@@ -753,7 +753,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 5: COMPLIANCE & RULES (Displayed ONLY after Step 1, 2, 3 & 4 are selected) */}
                             {isStep1Done && isStep2Done && isStep3Done && isStep4Done && (
-                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                                             <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">5</span>
@@ -770,27 +770,27 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                         )}
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <label className="flex items-start gap-3 cursor-pointer p-3.5 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
+                                    <div className="space-y-2">
+                                        <label className="flex items-start gap-2.5 cursor-pointer p-2.5 sm:p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.agreedTimeline}
                                                 onChange={(e) => updateData({ agreedTimeline: e.target.checked })}
-                                                className="mt-0.5 w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500"
+                                                className="mt-0.5 w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500"
                                             />
-                                            <span className="text-xs text-slate-300">
+                                            <span className="text-[11px] sm:text-xs text-slate-300">
                                                 I understand the evaluation completion timeline (typically 3 - 7 business days).
                                             </span>
                                         </label>
 
-                                        <label className="flex items-start gap-3 cursor-pointer p-3.5 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
+                                        <label className="flex items-start gap-2.5 cursor-pointer p-2.5 sm:p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.agreedNoTrading}
                                                 onChange={(e) => updateData({ agreedNoTrading: e.target.checked })}
-                                                className="mt-0.5 w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500"
+                                                className="mt-0.5 w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500"
                                             />
-                                            <span className="text-xs text-slate-300">
+                                            <span className="text-[11px] sm:text-xs text-slate-300">
                                                 I agree NOT to log into or place any trades on the account while evaluation is in progress.
                                             </span>
                                         </label>
@@ -800,7 +800,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 6: ACCOUNT LOGIN CREDENTIALS (Displayed ONLY after Step 1..5 are selected) */}
                             {isStep1Done && isStep2Done && isStep3Done && isStep4Done && isStep5Done && (
-                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                                             <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">6</span>
@@ -817,43 +817,43 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                                         <div>
-                                            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Account ID / Login Number *</label>
+                                            <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">Account ID / Login Number *</label>
                                             <input
                                                 type="text"
                                                 value={formData.loginId}
                                                 onChange={(e) => updateData({ loginId: e.target.value })}
                                                 placeholder="e.g. 1029384"
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Trader Password *</label>
+                                            <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">Trader Password *</label>
                                             <input
                                                 type="password"
                                                 value={formData.password}
                                                 onChange={(e) => updateData({ password: e.target.value })}
                                                 placeholder="************"
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Server Name</label>
+                                            <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">Server Name</label>
                                             <input
                                                 type="text"
                                                 value={formData.serverName}
                                                 onChange={(e) => updateData({ serverName: e.target.value })}
                                                 placeholder="e.g. FTMO-Server2"
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Platform</label>
+                                            <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">Platform</label>
                                             <select
                                                 value={formData.platform}
                                                 onChange={(e) => updateData({ platform: e.target.value })}
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
                                             >
                                                 <option value="Metatrader 5">MetaTrader 5 (MT5)</option>
                                                 <option value="Metatrader 4">MetaTrader 4 (MT4)</option>
@@ -867,7 +867,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 7: ORDER SUMMARY & PAYMENT (Displayed ONLY after Step 1..6 are selected) */}
                             {isStep1Done && isStep2Done && isStep3Done && isStep4Done && isStep5Done && isStep6Done && (
-                                <div className="space-y-4 animate-slideDown border-t border-slate-800/60 pt-4 sm:pt-6">
+                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
                                             <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">7</span>
@@ -876,7 +876,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                     </div>
 
                                     {/* Order Summary Box */}
-                                    <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2.5 text-xs">
+                                    <div className="p-3 sm:p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2 text-xs">
                                         <div className="flex justify-between text-slate-400">
                                             <span>Prop Firm:</span>
                                             <span className="font-bold text-white">{formData.propFirm}</span>
@@ -893,20 +893,20 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                             <span>Package Level:</span>
                                             <span className="font-bold text-white">{formData.packageType}</span>
                                         </div>
-                                        <div className="flex justify-between text-slate-400 border-t border-slate-800 pt-2.5 font-bold text-sm">
+                                        <div className="flex justify-between text-slate-400 border-t border-slate-800 pt-2 font-bold text-xs sm:text-sm">
                                             <span className="text-white">Total Amount:</span>
                                             <span className="text-blue-400">${formData.price} USD</span>
                                         </div>
                                     </div>
 
                                     {/* Payment Method Selection */}
-                                    <div className="space-y-2 pt-2">
-                                        <label className="text-xs font-semibold text-slate-300">Select Payment Method:</label>
-                                        <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1.5 pt-1">
+                                        <label className="text-[11px] sm:text-xs font-semibold text-slate-300">Select Payment Method:</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => updateData({ paymentMethod: "whop" })}
-                                                className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                                                className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                                                     formData.paymentMethod === "whop"
                                                         ? "bg-blue-600/20 border-blue-500 font-bold text-white"
                                                         : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
@@ -919,7 +919,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                             <button
                                                 type="button"
                                                 onClick={() => updateData({ paymentMethod: "direct" })}
-                                                className={`p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                                                className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                                                     formData.paymentMethod === "direct"
                                                         ? "bg-blue-600/20 border-blue-500 font-bold text-white"
                                                         : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
@@ -932,22 +932,22 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                     </div>
 
                                     {/* Terms Agreement */}
-                                    <div className="space-y-2 pt-2">
-                                        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-400">
+                                    <div className="space-y-1.5 pt-1">
+                                        <label className="flex items-center gap-2 cursor-pointer text-[11px] sm:text-xs text-slate-400">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.agreedToTerms}
                                                 onChange={(e) => updateData({ agreedToTerms: e.target.checked })}
-                                                className="w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800"
+                                                className="w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800"
                                             />
                                             <span>I agree to the Terms of Service</span>
                                         </label>
-                                        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-400">
+                                        <label className="flex items-center gap-2 cursor-pointer text-[11px] sm:text-xs text-slate-400">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.agreedToRefundPolicy}
                                                 onChange={(e) => updateData({ agreedToRefundPolicy: e.target.checked })}
-                                                className="w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800"
+                                                className="w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800"
                                             />
                                             <span>I agree to the Refund Policy</span>
                                         </label>
@@ -958,7 +958,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                         type="button"
                                         disabled={loading || !formData.agreedToTerms || !formData.agreedToRefundPolicy}
                                         onClick={handleSubmitOrder}
-                                        className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black rounded-xl text-sm transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 mt-4 cursor-pointer"
+                                        className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 mt-3 cursor-pointer"
                                     >
                                         {loading ? (
                                             <>
