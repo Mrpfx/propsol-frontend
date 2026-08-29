@@ -469,54 +469,54 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fadeIn">
             <div className="relative w-full max-w-3xl bg-[#090e23] border border-slate-800/80 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col text-white">
                 
                 {/* Modal Header */}
-                <div className="sticky top-0 z-20 bg-[#090e23]/95 backdrop-blur-md px-3.5 py-3 sm:px-6 sm:py-4 border-b border-slate-800/60 flex items-center justify-between">
-                    <div className="flex items-center gap-2.5 sm:gap-3">
-                        <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner shrink-0">
-                            <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                <div className="sticky top-0 z-20 bg-[#090e23]/95 backdrop-blur-md px-3 py-2.5 sm:px-6 sm:py-4 border-b border-slate-800/60 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner shrink-0">
+                            <ShieldCheck className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                         </div>
-                        <div>
-                            <h2 className="text-sm sm:text-lg font-bold text-white tracking-tight">PropSol Pass Evaluation Checkout</h2>
-                            <p className="text-[10px] sm:text-xs text-slate-400">Step-by-step selection for your evaluation account.</p>
+                        <div className="min-w-0">
+                            <h2 className="text-xs sm:text-lg font-bold text-white tracking-tight truncate">PropSol Pass Evaluation Checkout</h2>
+                            <p className="text-[9px] sm:text-xs text-slate-400 truncate">Step-by-step selection for your evaluation account.</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+                        className="p-1 sm:p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors shrink-0"
                     >
                         <X className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                 </div>
 
                 {/* Modal Body */}
-                <div className="p-3.5 sm:p-6 overflow-y-auto custom-scrollbar space-y-4 sm:space-y-6">
+                <div className="p-3 sm:p-6 overflow-y-auto custom-scrollbar space-y-3.5 sm:space-y-6">
                     {createdPayment ? (
                         <DirectPaymentView payment={createdPayment} onComplete={() => { onClose(); router.push("/dashboard"); }} />
                     ) : (
-                        <div className="space-y-4 sm:space-y-6">
+                        <div className="space-y-3.5 sm:space-y-6">
 
                             {/* STEP 1: SELECT PROP FIRM (Always Displayed) */}
-                            <div className="space-y-2.5 sm:space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                                        <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">1</span>
-                                        <span>SELECT PROP FIRM</span>
+                            <div className="space-y-2 sm:space-y-3">
+                                <div className="flex items-center justify-between gap-1 flex-nowrap">
+                                    <div className="flex items-center gap-1.5 min-w-0">
+                                        <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0">1</span>
+                                        <span className="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap">SELECT PROP FIRM</span>
                                     </div>
                                     {isStep1Done ? (
-                                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                                            <CheckCircle2 className="w-3.5 h-3.5" /> {formData.propFirm}
+                                        <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                            <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> {formData.propFirm}
                                         </span>
                                     ) : (
-                                        <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                        <span className="text-[9px] sm:text-[11px] text-amber-400 font-medium animate-pulse whitespace-nowrap truncate shrink-0">
                                             Select prop firm to continue
                                         </span>
                                     )}
                                 </div>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                                <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
                                     {PROP_FIRMS.map((firm) => {
                                         const isSelected = !isCustomFirm && formData.propFirm === firm.name;
                                         return (
@@ -527,14 +527,14 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                                     setIsCustomFirm(false);
                                                     updateData({ propFirm: firm.name });
                                                 }}
-                                                className={`p-2.5 sm:p-3.5 rounded-xl border transition-all duration-300 text-center flex flex-col items-center justify-center gap-1.5 cursor-pointer ${
+                                                className={`p-1.5 sm:p-3.5 rounded-xl border transition-all duration-300 text-center flex flex-col items-center justify-center gap-1 cursor-pointer ${
                                                     isSelected
                                                         ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                         : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                                 }`}
                                             >
-                                                <Building2 className={`w-4 h-4 sm:w-5 sm:h-5 ${firm.badgeColor}`} />
-                                                <span className="font-bold text-xs text-white">{firm.name}</span>
+                                                <Building2 className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${firm.badgeColor}`} />
+                                                <span className="font-bold text-[10px] sm:text-xs text-white truncate w-full text-center">{firm.name}</span>
                                             </button>
                                         );
                                     })}
@@ -545,18 +545,18 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                     <button
                                         type="button"
                                         onClick={() => setIsCustomFirm(!isCustomFirm)}
-                                        className="text-[11px] sm:text-xs text-blue-400 hover:underline font-semibold"
+                                        className="text-[10px] sm:text-xs text-blue-400 hover:underline font-semibold whitespace-nowrap"
                                     >
                                         {isCustomFirm ? "← Select from popular firms" : "+ Specify another prop firm"}
                                     </button>
                                     {isCustomFirm && (
-                                        <div className="mt-2 flex gap-2">
+                                        <div className="mt-1.5 flex gap-1.5">
                                             <input
                                                 type="text"
                                                 placeholder="Enter prop firm name..."
                                                 value={customFirmInput}
                                                 onChange={(e) => setCustomFirmInput(e.target.value)}
-                                                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
+                                                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-white outline-none focus:border-blue-500"
                                             />
                                             <button
                                                 type="button"
@@ -565,7 +565,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                                         updateData({ propFirm: customFirmInput.trim() });
                                                     }
                                                 }}
-                                                className="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl cursor-pointer"
+                                                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl cursor-pointer shrink-0"
                                             >
                                                 Confirm
                                             </button>
@@ -576,59 +576,59 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 2: CHALLENGE TYPE & SCOPE (Displayed ONLY after Step 1 is selected) */}
                             {isStep1Done && (
-                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">2</span>
-                                            <span>CHALLENGE TYPE & SCOPE</span>
+                                <div className="space-y-2 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3 sm:pt-4">
+                                    <div className="flex items-center justify-between gap-1 flex-nowrap">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0">2</span>
+                                            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap">CHALLENGE TYPE & SCOPE</span>
                                         </div>
                                         {isStep2Done ? (
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                                                <CheckCircle2 className="w-3.5 h-3.5" /> {formData.challengeType}{formData.scope ? ` (${formData.scope})` : ""}
+                                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> {formData.challengeType}{formData.scope ? ` (${formData.scope})` : ""}
                                             </span>
                                         ) : (
-                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                            <span className="text-[9px] sm:text-[11px] text-amber-400 font-medium animate-pulse whitespace-nowrap truncate shrink-0">
                                                 Select challenge type to continue
                                             </span>
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                                    <div className="grid grid-cols-2 gap-1.5 sm:gap-3">
                                         <button
                                             type="button"
                                             onClick={() => updateData({ challengeType: "1-Step Challenge", scope: "Full Pass" })}
-                                            className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                            className={`p-2 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
                                                 formData.challengeType === "1-Step Challenge"
                                                     ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                     : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                             }`}
                                         >
-                                            <div className="font-bold text-xs sm:text-sm text-white mb-0.5 sm:mb-1">1-Step Challenge</div>
-                                            <div className="text-[11px] sm:text-xs text-slate-400">Single phase evaluation model directly to funded status.</div>
+                                            <div className="font-bold text-[11px] sm:text-sm text-white mb-0.5 whitespace-nowrap">1-Step Challenge</div>
+                                            <div className="text-[9px] sm:text-xs text-slate-400 leading-tight line-clamp-2">Single phase evaluation model directly to funded status.</div>
                                         </button>
 
                                         <button
                                             type="button"
                                             onClick={() => updateData({ challengeType: "2-Step Challenge" })}
-                                            className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                            className={`p-2 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
                                                 formData.challengeType === "2-Step Challenge"
                                                     ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                     : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                             }`}
                                         >
-                                            <div className="font-bold text-xs sm:text-sm text-white mb-0.5 sm:mb-1">2-Step Challenge</div>
-                                            <div className="text-[11px] sm:text-xs text-slate-400">Two phase evaluation model (Phase 1 & Phase 2).</div>
+                                            <div className="font-bold text-[11px] sm:text-sm text-white mb-0.5 whitespace-nowrap">2-Step Challenge</div>
+                                            <div className="text-[9px] sm:text-xs text-slate-400 leading-tight line-clamp-2">Two phase evaluation model (Phase 1 & Phase 2).</div>
                                         </button>
                                     </div>
 
                                     {formData.challengeType === "2-Step Challenge" && (
-                                        <div className="pt-2 space-y-2 border-t border-slate-800/40">
-                                            <label className="text-xs font-semibold text-slate-300">Select 2-Step Scope:</label>
-                                            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                                        <div className="pt-1.5 space-y-1.5 border-t border-slate-800/40">
+                                            <label className="text-[10px] sm:text-xs font-semibold text-slate-300">Select 2-Step Scope:</label>
+                                            <div className="grid grid-cols-2 gap-1.5 sm:gap-3">
                                                 <button
                                                     type="button"
                                                     onClick={() => updateData({ scope: "Step 1 Only" })}
-                                                    className={`p-2.5 sm:p-3 rounded-xl border text-center sm:text-left transition-all text-xs cursor-pointer ${
+                                                    className={`p-2 sm:p-2.5 rounded-xl border text-center transition-all text-[10px] sm:text-xs whitespace-nowrap cursor-pointer ${
                                                         formData.scope === "Step 1 Only"
                                                             ? "bg-blue-600/20 border-blue-500 font-bold text-white"
                                                             : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
@@ -639,7 +639,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                                 <button
                                                     type="button"
                                                     onClick={() => updateData({ scope: "Full Pass" })}
-                                                    className={`p-2.5 sm:p-3 rounded-xl border text-center sm:text-left transition-all text-xs cursor-pointer ${
+                                                    className={`p-2 sm:p-2.5 rounded-xl border text-center transition-all text-[10px] sm:text-xs whitespace-nowrap cursor-pointer ${
                                                         formData.scope === "Full Pass"
                                                             ? "bg-blue-600/20 border-blue-500 font-bold text-white"
                                                             : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
@@ -655,36 +655,36 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 3: ACCOUNT SIZE (Displayed ONLY after Step 1 & 2 are selected) */}
                             {isStep1Done && isStep2Done && (
-                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">3</span>
-                                            <span>SELECT ACCOUNT SIZE</span>
+                                <div className="space-y-2 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3 sm:pt-4">
+                                    <div className="flex items-center justify-between gap-1 flex-nowrap">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0">3</span>
+                                            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap">SELECT ACCOUNT SIZE</span>
                                         </div>
                                         {isStep3Done ? (
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                                                <CheckCircle2 className="w-3.5 h-3.5" /> ${formData.accountSize.toLocaleString()}
+                                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> ${formData.accountSize.toLocaleString()}
                                             </span>
                                         ) : (
-                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                            <span className="text-[9px] sm:text-[11px] text-amber-400 font-medium animate-pulse whitespace-nowrap truncate shrink-0">
                                                 Select account size to continue
                                             </span>
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                                    <div className="grid grid-cols-5 gap-1 sm:gap-2">
                                         {ACCOUNT_SIZES.map((size) => (
                                             <button
                                                 key={size}
                                                 type="button"
                                                 onClick={() => updateData({ accountSize: size })}
-                                                className={`p-2.5 sm:p-3 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                                                className={`px-1 py-2 sm:p-3 rounded-lg sm:rounded-xl border text-center transition-all duration-300 cursor-pointer ${
                                                     formData.accountSize === size
                                                         ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10 font-bold"
                                                         : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                                 }`}
                                             >
-                                                <div className="font-bold text-xs sm:text-sm text-white">${size.toLocaleString()}</div>
+                                                <div className="font-bold text-[10px] sm:text-sm text-white whitespace-nowrap">${size.toLocaleString()}</div>
                                             </button>
                                         ))}
                                     </div>
@@ -693,59 +693,59 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 4: PACKAGE LEVEL & PRICE (Displayed ONLY after Step 1, 2 & 3 are selected) */}
                             {isStep1Done && isStep2Done && isStep3Done && (
-                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">4</span>
-                                            <span>PACKAGE LEVEL & PRICE</span>
+                                <div className="space-y-2 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3 sm:pt-4">
+                                    <div className="flex items-center justify-between gap-1 flex-nowrap">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0">4</span>
+                                            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap">PACKAGE LEVEL & PRICE</span>
                                         </div>
                                         {isStep4Done ? (
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                                                <CheckCircle2 className="w-3.5 h-3.5" /> {formData.packageType} (${formData.price})
+                                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> {formData.packageType} (${formData.price})
                                             </span>
                                         ) : (
-                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                            <span className="text-[9px] sm:text-[11px] text-amber-400 font-medium animate-pulse whitespace-nowrap truncate shrink-0">
                                                 Select package level to continue
                                             </span>
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                                    <div className="grid grid-cols-2 gap-1.5 sm:gap-3">
                                         {/* Standard Pass */}
                                         <button
                                             type="button"
                                             onClick={() => updateData({ packageType: "Standard Pass", price: computedPrices.standard })}
-                                            className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                                            className={`p-2 sm:p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
                                                 formData.packageType === "Standard Pass"
                                                     ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                     : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                             }`}
                                         >
-                                            <div className="flex justify-between items-center mb-1">
-                                                <span className="font-bold text-xs sm:text-sm text-white">Standard Pass</span>
-                                                <span className="font-extrabold text-blue-400 text-sm sm:text-base">${computedPrices.standard}</span>
+                                            <div className="flex justify-between items-center mb-0.5">
+                                                <span className="font-bold text-[11px] sm:text-sm text-white whitespace-nowrap">Standard Pass</span>
+                                                <span className="font-extrabold text-blue-400 text-xs sm:text-base">${computedPrices.standard}</span>
                                             </div>
-                                            <p className="text-[11px] sm:text-xs text-slate-400">Professional evaluation handling with standard pass guarantee.</p>
+                                            <p className="text-[9px] sm:text-xs text-slate-400 leading-tight line-clamp-2">Professional evaluation handling with standard pass guarantee.</p>
                                         </button>
 
                                         {/* Guaranteed Pass */}
                                         <button
                                             type="button"
                                             onClick={() => updateData({ packageType: "Guaranteed Pass", price: computedPrices.guaranteed })}
-                                            className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 relative cursor-pointer ${
+                                            className={`p-2 sm:p-4 rounded-xl border text-left transition-all duration-300 relative cursor-pointer ${
                                                 formData.packageType === "Guaranteed Pass"
                                                     ? "bg-blue-950/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md shadow-blue-500/10"
                                                     : "bg-[#0f1738]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#131d45]/60"
                                             }`}
                                         >
-                                            <div className="flex justify-between items-center mb-1">
-                                                <span className="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
-                                                    Guaranteed Pass
-                                                    <span className="text-[9px] sm:text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-bold">Refund + $100</span>
+                                            <div className="flex justify-between items-center mb-0.5">
+                                                <span className="font-bold text-[11px] sm:text-sm text-white flex items-center gap-1">
+                                                    Guaranteed
+                                                    <span className="text-[8px] sm:text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full font-bold">+$100</span>
                                                 </span>
-                                                <span className="font-extrabold text-blue-400 text-sm sm:text-base">${computedPrices.guaranteed}</span>
+                                                <span className="font-extrabold text-blue-400 text-xs sm:text-base">${computedPrices.guaranteed}</span>
                                             </div>
-                                            <p className="text-[11px] sm:text-xs text-slate-400">Full refund + $100 compensation if evaluation is not passed.</p>
+                                            <p className="text-[9px] sm:text-xs text-slate-400 leading-tight line-clamp-2">Full refund + $100 compensation if evaluation is not passed.</p>
                                         </button>
                                     </div>
                                 </div>
@@ -753,44 +753,44 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 5: COMPLIANCE & RULES (Displayed ONLY after Step 1, 2, 3 & 4 are selected) */}
                             {isStep1Done && isStep2Done && isStep3Done && isStep4Done && (
-                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">5</span>
-                                            <span>COMPLIANCE & RULES AGREEMENT</span>
+                                <div className="space-y-2 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3 sm:pt-4">
+                                    <div className="flex items-center justify-between gap-1 flex-nowrap">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0">5</span>
+                                            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap">COMPLIANCE & RULES AGREEMENT</span>
                                         </div>
                                         {isStep5Done ? (
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                                                <CheckCircle2 className="w-3.5 h-3.5" /> Rules Confirmed
+                                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Rules Confirmed
                                             </span>
                                         ) : (
-                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                            <span className="text-[9px] sm:text-[11px] text-amber-400 font-medium animate-pulse whitespace-nowrap truncate shrink-0">
                                                 Confirm rules to continue
                                             </span>
                                         )}
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <label className="flex items-start gap-2.5 cursor-pointer p-2.5 sm:p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
+                                    <div className="space-y-1.5">
+                                        <label className="flex items-start gap-2 cursor-pointer p-2 sm:p-2.5 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.agreedTimeline}
                                                 onChange={(e) => updateData({ agreedTimeline: e.target.checked })}
-                                                className="mt-0.5 w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500"
+                                                className="mt-0.5 w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500 shrink-0"
                                             />
-                                            <span className="text-[11px] sm:text-xs text-slate-300">
+                                            <span className="text-[10px] sm:text-xs text-slate-300 leading-tight">
                                                 I understand the evaluation completion timeline (typically 3 - 7 business days).
                                             </span>
                                         </label>
 
-                                        <label className="flex items-start gap-2.5 cursor-pointer p-2.5 sm:p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
+                                        <label className="flex items-start gap-2 cursor-pointer p-2 sm:p-2.5 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.agreedNoTrading}
                                                 onChange={(e) => updateData({ agreedNoTrading: e.target.checked })}
-                                                className="mt-0.5 w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500"
+                                                className="mt-0.5 w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500 shrink-0"
                                             />
-                                            <span className="text-[11px] sm:text-xs text-slate-300">
+                                            <span className="text-[10px] sm:text-xs text-slate-300 leading-tight">
                                                 I agree NOT to log into or place any trades on the account while evaluation is in progress.
                                             </span>
                                         </label>
@@ -800,60 +800,60 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 6: ACCOUNT LOGIN CREDENTIALS (Displayed ONLY after Step 1..5 are selected) */}
                             {isStep1Done && isStep2Done && isStep3Done && isStep4Done && isStep5Done && (
-                                <div className="space-y-2.5 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">6</span>
-                                            <span>ACCOUNT LOGIN CREDENTIALS</span>
+                                <div className="space-y-2 sm:space-y-3 animate-slideDown border-t border-slate-800/60 pt-3 sm:pt-4">
+                                    <div className="flex items-center justify-between gap-1 flex-nowrap">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0">6</span>
+                                            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap">ACCOUNT LOGIN CREDENTIALS</span>
                                         </div>
                                         {isStep6Done ? (
-                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                                                <CheckCircle2 className="w-3.5 h-3.5" /> ID: {formData.loginId}
+                                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> ID: {formData.loginId}
                                             </span>
                                         ) : (
-                                            <span className="text-[10px] sm:text-[11px] text-amber-400 font-medium animate-pulse">
+                                            <span className="text-[9px] sm:text-[11px] text-amber-400 font-medium animate-pulse whitespace-nowrap truncate shrink-0">
                                                 Enter credentials to continue
                                             </span>
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                                         <div>
-                                            <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">Account ID / Login Number *</label>
+                                            <label className="block text-[10px] sm:text-xs font-semibold text-slate-300 mb-0.5 truncate">Account ID / Login *</label>
                                             <input
                                                 type="text"
                                                 value={formData.loginId}
                                                 onChange={(e) => updateData({ loginId: e.target.value })}
                                                 placeholder="e.g. 1029384"
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-lg sm:rounded-xl px-2.5 py-1.5 text-[11px] sm:text-xs text-white outline-none focus:border-blue-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">Trader Password *</label>
+                                            <label className="block text-[10px] sm:text-xs font-semibold text-slate-300 mb-0.5 truncate">Trader Password *</label>
                                             <input
                                                 type="password"
                                                 value={formData.password}
                                                 onChange={(e) => updateData({ password: e.target.value })}
                                                 placeholder="************"
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-lg sm:rounded-xl px-2.5 py-1.5 text-[11px] sm:text-xs text-white outline-none focus:border-blue-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">Server Name</label>
+                                            <label className="block text-[10px] sm:text-xs font-semibold text-slate-300 mb-0.5 truncate">Server Name</label>
                                             <input
                                                 type="text"
                                                 value={formData.serverName}
                                                 onChange={(e) => updateData({ serverName: e.target.value })}
                                                 placeholder="e.g. FTMO-Server2"
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-lg sm:rounded-xl px-2.5 py-1.5 text-[11px] sm:text-xs text-white outline-none focus:border-blue-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">Platform</label>
+                                            <label className="block text-[10px] sm:text-xs font-semibold text-slate-300 mb-0.5 truncate">Platform</label>
                                             <select
                                                 value={formData.platform}
                                                 onChange={(e) => updateData({ platform: e.target.value })}
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-500"
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-lg sm:rounded-xl px-2.5 py-1.5 text-[11px] sm:text-xs text-white outline-none focus:border-blue-500"
                                             >
                                                 <option value="Metatrader 5">MetaTrader 5 (MT5)</option>
                                                 <option value="Metatrader 4">MetaTrader 4 (MT4)</option>
@@ -867,23 +867,23 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
 
                             {/* STEP 7: ORDER SUMMARY & PAYMENT (Displayed ONLY after Step 1..6 are selected) */}
                             {isStep1Done && isStep2Done && isStep3Done && isStep4Done && isStep5Done && isStep6Done && (
-                                <div className="space-y-3 animate-slideDown border-t border-slate-800/60 pt-3.5 sm:pt-5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 tracking-wider uppercase">
-                                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[11px] font-bold">7</span>
-                                            <span>ORDER SUMMARY & PAYMENT</span>
+                                <div className="space-y-2.5 animate-slideDown border-t border-slate-800/60 pt-3 sm:pt-4">
+                                    <div className="flex items-center justify-between gap-1 flex-nowrap">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0">7</span>
+                                            <span className="text-[10px] sm:text-xs font-semibold text-slate-400 tracking-wider uppercase whitespace-nowrap">ORDER SUMMARY & PAYMENT</span>
                                         </div>
                                     </div>
 
                                     {/* Order Summary Box */}
-                                    <div className="p-3 sm:p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2 text-xs">
+                                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1.5 text-[10px] sm:text-xs">
                                         <div className="flex justify-between text-slate-400">
                                             <span>Prop Firm:</span>
-                                            <span className="font-bold text-white">{formData.propFirm}</span>
+                                            <span className="font-bold text-white truncate max-w-[120px]">{formData.propFirm}</span>
                                         </div>
                                         <div className="flex justify-between text-slate-400">
-                                            <span>Challenge Type & Scope:</span>
-                                            <span className="font-bold text-white">{formData.challengeType} ({formData.scope})</span>
+                                            <span>Challenge & Scope:</span>
+                                            <span className="font-bold text-white truncate max-w-[140px]">{formData.challengeType} ({formData.scope})</span>
                                         </div>
                                         <div className="flex justify-between text-slate-400">
                                             <span>Account Size:</span>
@@ -893,63 +893,63 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                             <span>Package Level:</span>
                                             <span className="font-bold text-white">{formData.packageType}</span>
                                         </div>
-                                        <div className="flex justify-between text-slate-400 border-t border-slate-800 pt-2 font-bold text-xs sm:text-sm">
+                                        <div className="flex justify-between text-slate-400 border-t border-slate-800 pt-1.5 font-bold text-xs sm:text-sm">
                                             <span className="text-white">Total Amount:</span>
                                             <span className="text-blue-400">${formData.price} USD</span>
                                         </div>
                                     </div>
 
                                     {/* Payment Method Selection */}
-                                    <div className="space-y-1.5 pt-1">
-                                        <label className="text-[11px] sm:text-xs font-semibold text-slate-300">Select Payment Method:</label>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                                    <div className="space-y-1 pt-0.5">
+                                        <label className="text-[10px] sm:text-xs font-semibold text-slate-300">Select Payment Method:</label>
+                                        <div className="grid grid-cols-2 gap-1.5 sm:gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => updateData({ paymentMethod: "whop" })}
-                                                className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                                                className={`p-2 sm:p-2.5 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                                                     formData.paymentMethod === "whop"
                                                         ? "bg-blue-600/20 border-blue-500 font-bold text-white"
                                                         : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
                                                 }`}
                                             >
-                                                <span className="text-xs">Whop Pay (Cards / Apple Pay)</span>
-                                                <CreditCard className="w-4 h-4 text-blue-400" />
+                                                <span className="text-[10px] sm:text-xs truncate">Whop Pay (Card/Apple)</span>
+                                                <CreditCard className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                                             </button>
 
                                             <button
                                                 type="button"
                                                 onClick={() => updateData({ paymentMethod: "direct" })}
-                                                className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                                                className={`p-2 sm:p-2.5 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                                                     formData.paymentMethod === "direct"
                                                         ? "bg-blue-600/20 border-blue-500 font-bold text-white"
                                                         : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700"
                                                 }`}
                                             >
-                                                <span className="text-xs">Crypto Pay (BTC, USDT, ETH)</span>
-                                                <Wallet className="w-4 h-4 text-amber-400" />
+                                                <span className="text-[10px] sm:text-xs truncate">Crypto Pay (BTC/USDT)</span>
+                                                <Wallet className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                                             </button>
                                         </div>
                                     </div>
 
                                     {/* Terms Agreement */}
-                                    <div className="space-y-1.5 pt-1">
-                                        <label className="flex items-center gap-2 cursor-pointer text-[11px] sm:text-xs text-slate-400">
+                                    <div className="space-y-1 pt-0.5">
+                                        <label className="flex items-center gap-1.5 cursor-pointer text-[10px] sm:text-xs text-slate-400">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.agreedToTerms}
                                                 onChange={(e) => updateData({ agreedToTerms: e.target.checked })}
-                                                className="w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800"
+                                                className="w-3 h-3 rounded text-blue-600 bg-slate-950 border-slate-800 shrink-0"
                                             />
-                                            <span>I agree to the Terms of Service</span>
+                                            <span className="truncate">I agree to the Terms of Service</span>
                                         </label>
-                                        <label className="flex items-center gap-2 cursor-pointer text-[11px] sm:text-xs text-slate-400">
+                                        <label className="flex items-center gap-1.5 cursor-pointer text-[10px] sm:text-xs text-slate-400">
                                             <input
                                                 type="checkbox"
                                                 checked={formData.agreedToRefundPolicy}
                                                 onChange={(e) => updateData({ agreedToRefundPolicy: e.target.checked })}
-                                                className="w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800"
+                                                className="w-3 h-3 rounded text-blue-600 bg-slate-950 border-slate-800 shrink-0"
                                             />
-                                            <span>I agree to the Refund Policy</span>
+                                            <span className="truncate">I agree to the Refund Policy</span>
                                         </label>
                                     </div>
 
@@ -958,16 +958,16 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                         type="button"
                                         disabled={loading || !formData.agreedToTerms || !formData.agreedToRefundPolicy}
                                         onClick={handleSubmitOrder}
-                                        className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 mt-3 cursor-pointer"
+                                        className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-black rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-1.5 mt-2 cursor-pointer"
                                     >
                                         {loading ? (
                                             <>
-                                                <RefreshCw className="w-4 h-4 animate-spin" />
+                                                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                                                 <span>Processing Order...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Lock className="w-4 h-4" />
+                                                <Lock className="w-3.5 h-3.5" />
                                                 <span>Complete Order (${formData.price} USD)</span>
                                             </>
                                         )}
