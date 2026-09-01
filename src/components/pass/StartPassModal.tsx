@@ -861,7 +861,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                                 className="mt-0.5 w-3.5 h-3.5 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500 shrink-0"
                                             />
                                             <span className="text-[10px] sm:text-xs text-slate-300 leading-tight">
-                                                I understand the evaluation completion timeline (typically 3 - 7 business days).
+                                                I understand the evaluation completion timeline (typically 3 - 8 business days).
                                             </span>
                                         </label>
 
