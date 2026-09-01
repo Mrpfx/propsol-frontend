@@ -64,7 +64,6 @@ const FALLBACK_PLANS = [
         is_popular: false,
         prices: [
             { account_size: 50000, price: 800, account_size_display: "$50k Account" },
-            { account_size: 90000, price: 950, account_size_display: "$90k Account" },
             { account_size: 100000, price: 1200, account_size_display: "$100k Account" },
             { account_size: 200000, price: 1700, account_size_display: "$200k Account" },
             { account_size: 500000, price: 2500, account_size_display: "$500k Account" }
@@ -80,7 +79,6 @@ const FALLBACK_PLANS = [
         is_popular: true,
         prices: [
             { account_size: 50000, price: 1100, account_size_display: "$50k Account" },
-            { account_size: 90000, price: 1350, account_size_display: "$90k Account" },
             { account_size: 100000, price: 1600, account_size_display: "$100k Account" },
             { account_size: 200000, price: 2200, account_size_display: "$200k Account" },
             { account_size: 500000, price: 3200, account_size_display: "$500k Account" }
@@ -96,7 +94,6 @@ const FALLBACK_PLANS = [
         is_popular: false,
         prices: [
             { account_size: 50000, price: 1400, account_size_display: "$50k Account" },
-            { account_size: 90000, price: 1650, account_size_display: "$90k Account" },
             { account_size: 100000, price: 1900, account_size_display: "$100k Account" },
             { account_size: 200000, price: 2600, account_size_display: "$200k Account" },
             { account_size: 500000, price: 3800, account_size_display: "$500k Account" }
@@ -112,7 +109,6 @@ const FALLBACK_PLANS = [
         is_popular: false,
         prices: [
             { account_size: 50000, price: 490, account_size_display: "$50k Account" },
-            { account_size: 90000, price: 590, account_size_display: "$90k Account" },
             { account_size: 100000, price: 690, account_size_display: "$100k Account" },
             { account_size: 200000, price: 990, account_size_display: "$200k Account" },
             { account_size: 500000, price: 1390, account_size_display: "$500k Account" }
@@ -128,7 +124,6 @@ const FALLBACK_PLANS = [
         is_popular: true,
         prices: [
             { account_size: 50000, price: 690, account_size_display: "$50k Account" },
-            { account_size: 90000, price: 790, account_size_display: "$90k Account" },
             { account_size: 100000, price: 890, account_size_display: "$100k Account" },
             { account_size: 200000, price: 1290, account_size_display: "$200k Account" },
             { account_size: 500000, price: 1790, account_size_display: "$500k Account" }
@@ -144,7 +139,6 @@ const FALLBACK_PLANS = [
         is_popular: false,
         prices: [
             { account_size: 50000, price: 1400, account_size_display: "$50k Account" },
-            { account_size: 90000, price: 1650, account_size_display: "$90k Account" },
             { account_size: 100000, price: 1900, account_size_display: "$100k Account" },
             { account_size: 200000, price: 2600, account_size_display: "$200k Account" },
             { account_size: 500000, price: 3800, account_size_display: "$500k Account" }
@@ -159,7 +153,7 @@ const PROP_FIRMS = [
     { id: "TenTrade", name: "TenTrade", badgeColor: "text-amber-500" }
 ];
 
-const ACCOUNT_SIZES = [50000, 90000, 100000, 200000, 500000];
+const ACCOUNT_SIZES = [50000, 100000, 200000, 500000];
 
 const INITIAL_CHECKOUT_DATA = {
     model: "pass",
@@ -856,7 +850,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-5 gap-1 sm:gap-2">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
                                         {ACCOUNT_SIZES.map((size) => (
                                             <button
                                                 key={size}
@@ -925,7 +919,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                                             <div className="flex justify-between items-center mb-0.5">
                                                 <span className="font-bold text-[11px] sm:text-sm text-white flex items-center gap-1">
                                                     Guaranteed
-                                                    <span className="text-[8px] sm:text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full font-bold">+$100</span>
+                                                    <span className="text-[8px] sm:text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full font-bold">Refund Protection</span>
                                                 </span>
                                                 <span className="font-extrabold text-blue-400 text-xs sm:text-base">${computedPrices.guaranteed}</span>
                                             </div>

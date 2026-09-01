@@ -8,9 +8,7 @@ import { toast } from 'react-hot-toast';
 import { Check, ThumbsUp } from 'lucide-react';
 import { api } from '@/lib/api';
 
-const planService = {
-  getAllPlans: async () => (await api.get('/plans/')).data
-};
+import { planService } from '@/services/plan.service';
 
 const fallbackPlans = [
   {
