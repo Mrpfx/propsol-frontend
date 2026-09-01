@@ -117,17 +117,18 @@ function Card({ plan, onOpenPassModal }) {
   const benefitIconColor = isPopular ? "text-slate-300" : "text-[#4B3DB7]";
   const badgeStyle = isPopular ? "bg-white text-[#2D2460]" : "bg-[#4B3DB7] text-white";
 
-  let href = "/checkout?model=pass";
-  let planParams = { model: "pass" };
+  let packageType = plan.slug.startsWith("guaranteed") ? "Guaranteed Pass" : "Standard Pass";
+  let href = `/checkout?model=pass&packageType=${encodeURIComponent(packageType)}`;
+  let planParams = { model: "pass", packageType };
   if (plan.slug.includes("step-1")) {
-    href = "/checkout?model=pass&accountType=2-step&scope=step-1";
-    planParams = { model: "pass", accountType: "2-step", scope: "step-1" };
+    href = `/checkout?model=pass&packageType=${encodeURIComponent(packageType)}&accountType=2-step&scope=step-1`;
+    planParams = { ...planParams, accountType: "2-step", scope: "step-1" };
   } else if (plan.slug.includes("2-step-full")) {
-    href = "/checkout?model=pass&accountType=2-step&scope=full";
-    planParams = { model: "pass", accountType: "2-step", scope: "full" };
+    href = `/checkout?model=pass&packageType=${encodeURIComponent(packageType)}&accountType=2-step&scope=full`;
+    planParams = { ...planParams, accountType: "2-step", scope: "full" };
   } else if (plan.slug.includes("1-step")) {
-    href = "/checkout?model=pass&accountType=1-step&scope=full";
-    planParams = { model: "pass", accountType: "1-step", scope: "full" };
+    href = `/checkout?model=pass&packageType=${encodeURIComponent(packageType)}&accountType=1-step&scope=full`;
+    planParams = { ...planParams, accountType: "1-step", scope: "full" };
   }
 
   let buttonText = "Select Plan";
