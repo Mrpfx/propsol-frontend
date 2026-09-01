@@ -53,6 +53,105 @@ const cryptoService = {
     getPaymentById: async (id: string) => (await api.get(`/crypto-payments/${id}`)).data
 };
 
+const FALLBACK_PLANS = [
+    {
+        id: "guaranteed-step1Only",
+        slug: "guaranteed-2-step-step-1",
+        name: "2-Step Challenge —",
+        subtitle: "Step 1 Pass Only",
+        description: "Best for traders who want help clearing the first stage",
+        benefits: ["You may continue Step 2 yourself", "Or upgrade later to full completion"],
+        is_popular: false,
+        prices: [
+            { account_size: 50000, price: 800, account_size_display: "$50k Account" },
+            { account_size: 90000, price: 950, account_size_display: "$90k Account" },
+            { account_size: 100000, price: 1200, account_size_display: "$100k Account" },
+            { account_size: 200000, price: 1700, account_size_display: "$200k Account" },
+            { account_size: 500000, price: 2500, account_size_display: "$500k Account" }
+        ]
+    },
+    {
+        id: "guaranteed-fullTwoStep",
+        slug: "guaranteed-2-step-full",
+        name: "2-Step Challenge —",
+        subtitle: "Full (Step 1 + Step 2)",
+        description: "Best for traders who want the entire challenge completed.",
+        benefits: ["Optional access to the PropSol Trading System for funded trading support"],
+        is_popular: true,
+        prices: [
+            { account_size: 50000, price: 1100, account_size_display: "$50k Account" },
+            { account_size: 90000, price: 1350, account_size_display: "$90k Account" },
+            { account_size: 100000, price: 1600, account_size_display: "$100k Account" },
+            { account_size: 200000, price: 2200, account_size_display: "$200k Account" },
+            { account_size: 500000, price: 3200, account_size_display: "$500k Account" }
+        ]
+    },
+    {
+        id: "guaranteed-oneStep",
+        slug: "guaranteed-1-step-full",
+        name: "1-Step Challenge —",
+        subtitle: "Full",
+        description: "Best for firms with single-phase challenges.",
+        benefits: ["Funded account returned to you", "Optional access to the PropSol Trading System"],
+        is_popular: false,
+        prices: [
+            { account_size: 50000, price: 1400, account_size_display: "$50k Account" },
+            { account_size: 90000, price: 1650, account_size_display: "$90k Account" },
+            { account_size: 100000, price: 1900, account_size_display: "$100k Account" },
+            { account_size: 200000, price: 2600, account_size_display: "$200k Account" },
+            { account_size: 500000, price: 3800, account_size_display: "$500k Account" }
+        ]
+    },
+    {
+        id: "standard-step1Only",
+        slug: "standard-2-step-step-1",
+        name: "2-Step Challenge —",
+        subtitle: "Step 1 Pass Only",
+        description: "Best for traders who want help clearing the first stage",
+        benefits: ["You may continue Step 2 yourself", "Or upgrade later to full completion"],
+        is_popular: false,
+        prices: [
+            { account_size: 50000, price: 490, account_size_display: "$50k Account" },
+            { account_size: 90000, price: 590, account_size_display: "$90k Account" },
+            { account_size: 100000, price: 690, account_size_display: "$100k Account" },
+            { account_size: 200000, price: 990, account_size_display: "$200k Account" },
+            { account_size: 500000, price: 1390, account_size_display: "$500k Account" }
+        ]
+    },
+    {
+        id: "standard-fullTwoStep",
+        slug: "standard-2-step-full",
+        name: "2-Step Challenge —",
+        subtitle: "Full (Step 1 + Step 2)",
+        description: "Best for traders who want the entire challenge completed.",
+        benefits: ["Optional access to the PropSol Trading System for funded trading support"],
+        is_popular: true,
+        prices: [
+            { account_size: 50000, price: 690, account_size_display: "$50k Account" },
+            { account_size: 90000, price: 790, account_size_display: "$90k Account" },
+            { account_size: 100000, price: 890, account_size_display: "$100k Account" },
+            { account_size: 200000, price: 1290, account_size_display: "$200k Account" },
+            { account_size: 500000, price: 1790, account_size_display: "$500k Account" }
+        ]
+    },
+    {
+        id: "standard-oneStep",
+        slug: "standard-1-step-full",
+        name: "1-Step Challenge —",
+        subtitle: "Full",
+        description: "Best for firms with single-phase challenges.",
+        benefits: ["Funded account returned to you", "Optional access to the PropSol Trading System"],
+        is_popular: false,
+        prices: [
+            { account_size: 50000, price: 1400, account_size_display: "$50k Account" },
+            { account_size: 90000, price: 1650, account_size_display: "$90k Account" },
+            { account_size: 100000, price: 1900, account_size_display: "$100k Account" },
+            { account_size: 200000, price: 2600, account_size_display: "$200k Account" },
+            { account_size: 500000, price: 3800, account_size_display: "$500k Account" }
+        ]
+    }
+];
+
 const PROP_FIRMS = [
     { id: "FundedNext", name: "FundedNext", badgeColor: "text-purple-400" },
     { id: "FundingPips", name: "FundingPips", badgeColor: "text-blue-400" },
@@ -307,6 +406,7 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                     propFirm: initialPlan?.propFirm || "",
                     challengeType: initialChallengeType,
                     scope: initialScope,
+                    packageType: initialPlan?.packageType || "",
                     accountSize: initialPlan?.accountSize || 0
                 });
             }
@@ -325,9 +425,12 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
                 const fetchedPlans = await planService.getAllPlans();
                 if (fetchedPlans && fetchedPlans.length > 0) {
                     setPlans(fetchedPlans);
+                } else {
+                    setPlans(FALLBACK_PLANS);
                 }
             } catch (err) {
-                console.error("Failed to fetch plans", err);
+                console.error("Failed to fetch plans, using fallback", err);
+                setPlans(FALLBACK_PLANS);
             }
         };
 
@@ -367,8 +470,10 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
         const stdSlug = `standard-${challengeTypeSlug}-${scopeSlug}`;
         const grtSlug = `guaranteed-${challengeTypeSlug}-${scopeSlug}`;
 
-        const stdPlan = plans.find((p) => p.slug === stdSlug);
-        const grtPlan = plans.find((p) => p.slug === grtSlug);
+        const activePlans = plans && plans.length > 0 ? plans : FALLBACK_PLANS;
+
+        const stdPlan = activePlans.find((p) => p.slug === stdSlug);
+        const grtPlan = activePlans.find((p) => p.slug === grtSlug);
 
         const getPriceForSize = (plan: any, size: number) => {
             if (!plan || !plan.prices) return 0;
@@ -376,11 +481,8 @@ export default function StartPassModal({ isOpen, onClose, initialPlan }: StartPa
             return match ? match.price : 0;
         };
 
-        const defaultStdPrices = { 50000: 490, 90000: 590, 100000: 690, 200000: 990, 500000: 1390 };
-        const defaultGrtPrices = { 50000: 800, 90000: 950, 100000: 1200, 200000: 1700, 500000: 2500 };
-
-        const stdPrice = getPriceForSize(stdPlan, formData.accountSize) || defaultStdPrices[formData.accountSize] || 0;
-        const grtPrice = getPriceForSize(grtPlan, formData.accountSize) || defaultGrtPrices[formData.accountSize] || 0;
+        const stdPrice = getPriceForSize(stdPlan, formData.accountSize);
+        const grtPrice = getPriceForSize(grtPlan, formData.accountSize);
 
         return {
             standard: stdPrice,
